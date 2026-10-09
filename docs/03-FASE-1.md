@@ -1,1 +1,91 @@
-<img width="713" height="2268" alt="imagen" src="https://github.com/user-attachments/assets/8f0aa003-c8ef-4d53-9618-d595a95b4b8e" />
+# ÓPTICA FAMILIAR
+
+# Fase 1 de Desarrollo
+
+## Estado
+
+APROBADO
+
+Listo para Construcción
+
+---
+
+# Objetivo
+
+Implementar el núcleo operativo funcional.
+
+---
+
+# Módulo Seguridad
+
+- Empresa
+- Sucursal
+- Rol
+- Usuario
+- Login
+- JWT
+
+---
+
+# Módulo Clientes
+
+- Cliente
+
+---
+
+# Módulo Optometría
+
+- Examen Visual
+- Receta
+
+---
+
+# Módulo Comercial
+
+- Orden Trabajo
+- Venta
+- Detalle Venta
+
+---
+
+# Flujo Mínimo Operativo
+
+Login
+↓
+Cliente
+↓
+Examen Visual
+↓
+Receta
+↓
+Orden Trabajo
+↓
+Venta
+↓
+Entrega
+
+---
+
+# Fuera de Alcance
+
+- Inventario Completo
+- Compras
+- Proveedores
+- Dashboard
+- Facturación Electrónica
+- Multiidioma
+- Aplicación Móvil
+
+---
+
+# Objetivo de Salida
+
+Al finalizar la Fase 1 el sistema deberá permitir:
+
+- Iniciar sesión
+- Registrar clientes
+- Registrar exámenes visuales
+- Registrar recetas
+- Registrar órdenes de trabajo
+- Registrar ventas
+- Generar historial del cliente
