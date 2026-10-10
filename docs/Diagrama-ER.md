@@ -4,27 +4,46 @@
 ```mermaid
 erDiagram
 
-EMPRESA ||--o{ SUCURSAL : posee
+%% =========================================
+%% ORGANIZACION
+%% =========================================
 
 EMPRESA ||--|| EMPRESA_CONFIGURACION : configura
-
+EMPRESA ||--o{ SUCURSAL : posee
 SUCURSAL ||--|| SUCURSAL_CONFIGURACION : configura
 
+%% =========================================
+%% SEGURIDAD
+%% =========================================
+
 ROL ||--o{ USUARIO : asigna
-
 ROL ||--o{ ROL_PERMISO : contiene
-
 PERMISO ||--o{ ROL_PERMISO : pertenece
+
+%% =========================================
+%% PERSONAS
+%% =========================================
+
+PERSONA ||--|| CLIENTE : es
+PERSONA ||--|| PACIENTE : es
+PERSONA ||--|| USUARIO : es
+PERSONA ||--|| OPTOMETRISTA : es
 
 SUCURSAL ||--o{ USUARIO : pertenece
 
-CLIENTE ||--|| PACIENTE : es
+USUARIO ||--|| OPTOMETRISTA : representa
+
+%% =========================================
+%% AGENDA MEDICA
+%% =========================================
 
 PACIENTE ||--o{ CITA : agenda
-
 OPTOMETRISTA ||--o{ CITA : atiende
-
 SUCURSAL ||--o{ CITA : programa
+
+%% =========================================
+%% HISTORIA CLINICA
+%% =========================================
 
 PACIENTE ||--o{ HISTORIA_CLINICA : posee
 
@@ -36,20 +55,29 @@ CITA ||--|| CONSULTA : genera
 
 CONSULTA ||--|| RECETA : emite
 
-CATEGORIA_PRODUCTO ||--o{ PRODUCTO : clasifica
+%% =========================================
+%% PRODUCTOS
+%% =========================================
 
+CATEGORIA_PRODUCTO ||--o{ PRODUCTO : clasifica
 MARCA ||--o{ PRODUCTO : identifica
 
-SUCURSAL ||--o{ INVENTARIO : mantiene
+%% =========================================
+%% INVENTARIO
+%% =========================================
 
+SUCURSAL ||--o{ INVENTARIO : mantiene
 PRODUCTO ||--o{ INVENTARIO : controla
 
 INVENTARIO ||--o{ MOVIMIENTO_INVENTARIO : registra
 
 USUARIO ||--o{ MOVIMIENTO_INVENTARIO : ejecuta
 
-SUCURSAL ||--o{ TRANSFERENCIA : origen
+%% =========================================
+%% TRANSFERENCIAS
+%% =========================================
 
+SUCURSAL ||--o{ TRANSFERENCIA : origen
 SUCURSAL ||--o{ TRANSFERENCIA : destino
 
 USUARIO ||--o{ TRANSFERENCIA : solicita
@@ -58,6 +86,10 @@ TRANSFERENCIA ||--o{ TRANSFERENCIA_DETALLE : contiene
 
 PRODUCTO ||--o{ TRANSFERENCIA_DETALLE : participa
 
+%% =========================================
+%% COMPRAS
+%% =========================================
+
 PROVEEDOR ||--o{ COMPRA : suministra
 
 SUCURSAL ||--o{ COMPRA : realiza
@@ -65,6 +97,10 @@ SUCURSAL ||--o{ COMPRA : realiza
 COMPRA ||--o{ COMPRA_DETALLE : contiene
 
 PRODUCTO ||--o{ COMPRA_DETALLE : compra
+
+%% =========================================
+%% VENTAS
+%% =========================================
 
 CLIENTE ||--o{ VENTA : realiza
 
@@ -76,9 +112,17 @@ VENTA ||--o{ VENTA_DETALLE : contiene
 
 PRODUCTO ||--o{ VENTA_DETALLE : vende
 
+%% =========================================
+%% ORDENES DE TRABAJO
+%% =========================================
+
 VENTA ||--|| ORDEN_TRABAJO : genera
 
 RECETA ||--o{ ORDEN_TRABAJO : utiliza
+
+%% =========================================
+%% CAJA
+%% =========================================
 
 SUCURSAL ||--o{ CAJA : posee
 
@@ -86,11 +130,27 @@ CAJA ||--o{ MOVIMIENTO_CAJA : registra
 
 USUARIO ||--o{ MOVIMIENTO_CAJA : ejecuta
 
+%% =========================================
+%% PAGOS
+%% =========================================
+
 VENTA ||--o{ PAGO : recibe
+
+%% =========================================
+%% CONFIGURACION
+%% =========================================
 
 SUCURSAL ||--o{ NUMERACION_DOCUMENTO : administra
 
+%% =========================================
+%% AUDITORIA
+%% =========================================
+
 USUARIO ||--o{ AUDITORIA : genera
+
+%% =========================================
+%% ENTIDADES
+%% =========================================
 
 EMPRESA {
     bigint id PK
@@ -124,23 +184,30 @@ ROL_PERMISO {
     bigint permiso_id FK
 }
 
-USUARIO {
+PERSONA {
     bigint id PK
-    bigint rol_id FK
-    bigint sucursal_id FK
 }
 
 CLIENTE {
     bigint id PK
+    bigint persona_id FK
 }
 
 PACIENTE {
     bigint id PK
-    bigint cliente_id FK
+    bigint persona_id FK
+}
+
+USUARIO {
+    bigint id PK
+    bigint persona_id FK
+    bigint rol_id FK
+    bigint sucursal_id FK
 }
 
 OPTOMETRISTA {
     bigint id PK
+    bigint persona_id FK
     bigint usuario_id FK
 }
 
@@ -257,6 +324,14 @@ PAGO {
     bigint venta_id FK
 }
 
+CONFIGURACION_SISTEMA {
+    bigint id PK
+}
+
+PARAMETRO_CATALOGO {
+    bigint id PK
+}
+
 NUMERACION_DOCUMENTO {
     bigint id PK
     bigint sucursal_id FK
@@ -267,3 +342,91 @@ AUDITORIA {
     bigint usuario_id FK
 }
 ```
+
+---
+
+# Resumen del ERD
+
+## Núcleo Organizacional
+
+```text
+EMPRESA
+SUCURSAL
+```
+
+## Seguridad
+
+```text
+ROL
+PERMISO
+ROL_PERMISO
+USUARIO
+```
+
+## Personas
+
+```text
+PERSONA
+CLIENTE
+PACIENTE
+OPTOMETRISTA
+```
+
+## Historia Clínica
+
+```text
+CITA
+HISTORIA_CLINICA
+CONSULTA
+RECETA
+```
+
+## Inventario
+
+```text
+PRODUCTO
+CATEGORIA_PRODUCTO
+MARCA
+INVENTARIO
+MOVIMIENTO_INVENTARIO
+TRANSFERENCIA
+TRANSFERENCIA_DETALLE
+```
+
+## Comercial
+
+```text
+PROVEEDOR
+COMPRA
+COMPRA_DETALLE
+
+VENTA
+VENTA_DETALLE
+
+PAGO
+```
+
+## Operación
+
+```text
+ORDEN_TRABAJO
+
+CAJA
+MOVIMIENTO_CAJA
+```
+
+## Configuración
+
+```text
+CONFIGURACION_SISTEMA
+PARAMETRO_CATALOGO
+NUMERACION_DOCUMENTO
+```
+
+## Auditoría
+
+```text
+AUDITORIA
+```
+
+---
