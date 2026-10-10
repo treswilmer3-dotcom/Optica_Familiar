@@ -23,7 +23,7 @@ Congelado para Fase 1
 
 # Frontend
 
-- Angular 20
+- Angular 18
 - Angular Material
 - TypeScript
 - RxJS

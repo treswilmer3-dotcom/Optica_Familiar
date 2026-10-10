@@ -204,6 +204,6 @@ La arquitectura aprobada para el proyecto es:
 - Multisucursal
 - Monolito Modular
 - .NET 10
-- Angular 20
+- Angular 18
 
 Esta decisión queda congelada para el inicio del desarrollo.
