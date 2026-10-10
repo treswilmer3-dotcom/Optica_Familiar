@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="OpticaFamiliar.API/OpticaFamiliar.API.csproj" />
+  <Project Path="OpticaFamiliar.Application/OpticaFamiliar.Application.csproj" />
+  <Project Path="OpticaFamiliar.Domain/OpticaFamiliar.Domain.csproj" />
+  <Project Path="OpticaFamiliar.Infrastructure/OpticaFamiliar.Infrastructure.csproj" />
+</Solution>

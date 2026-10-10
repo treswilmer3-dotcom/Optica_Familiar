@@ -1,0 +1,16 @@
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/bin/Debug/net10.0/OpticaFamiliar.Application.deps.json
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/bin/Debug/net10.0/OpticaFamiliar.Application.dll
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/bin/Debug/net10.0/OpticaFamiliar.Application.pdb
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/bin/Debug/net10.0/OpticaFamiliar.Domain.dll
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/bin/Debug/net10.0/OpticaFamiliar.Domain.pdb
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.csproj.AssemblyReference.cache
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.GeneratedMSBuildEditorConfig.editorconfig
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.AssemblyInfoInputs.cache
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.AssemblyInfo.cs
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.csproj.CoreCompileInputs.cache
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.sourcelink.json
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFa.3E1BE6F9.Up2Date
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.dll
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/refint/OpticaFamiliar.Application.dll
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/OpticaFamiliar.Application.pdb
+/home/administrador/Optica_Familiar/backend/OpticaFamiliar.Application/obj/Debug/net10.0/ref/OpticaFamiliar.Application.dll
