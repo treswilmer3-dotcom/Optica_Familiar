@@ -20,6 +20,8 @@ Todas las rutas (salvo las de `SA`) trabajan **solo con datos de la empresa del 
 | Método | Ruta | Roles | Descripción |
 |---|---|---|---|
 | GET | `/empresas/actual` | todos | Empresa del usuario (moneda, IVA, país…) |
+| GET | `/empresas/actual/marca` | todos | Identidad visual: `colorPrimario`, `colorSecundario`, `logo` |
+| PUT | `/empresas/actual/marca` | AD | Actualiza colores (`#RRGGBB`) y logo (ruta `/brand/...` o data URL png/jpeg/webp ≤ ~300 KB; no SVG) |
 | GET/POST | `/empresas` | SA | Listar / crear (crea sus categorías base) |
 | GET/PUT | `/empresas/{id}` | SA | Obtener / actualizar (incluye `estado`) |
 | GET | `/sucursales`, `/sucursales/{id}` | todos | Sucursales de la empresa (SA: todas) |

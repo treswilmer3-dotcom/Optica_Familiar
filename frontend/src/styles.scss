@@ -1,23 +1,85 @@
-@use '@angular/material' as mat;
+/* ===== Identidad visual =====
+   Los valores por defecto (marca Óptica Familiar) se reemplazan en tiempo de ejecución por BrandService
+   con los colores de la empresa autenticada. */
+:root {
+  --brand: #1F7391;
+  --brand-dark: #185A72;
+  --brand-light: #DDEBF1;
+  --brand-accent: #4494AC;
+  --brand-on-accent: #FFFFFF;
+  --sidebar-bg: #1C2226;
+  --sidebar-text: #DCE5E9;
+  --bg: #F2F6F8;
+  --borde: #E1E8EC;
+  --texto-suave: #5B6B73;
+  --radio: 12px;
+}
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background: #f5f6fa; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background: var(--bg); color: #1B2024; -webkit-text-size-adjust: 100%; }
+a { color: var(--brand); }
 
+/* ===== Material: forma y tarjetas ===== */
+html {
+  --mat-table-row-item-outline-color: #E6ECEF;
+  --mat-table-header-container-height: 52px;
+  --mdc-filled-button-container-shape: 10px;
+  --mdc-outlined-button-container-shape: 10px;
+  --mdc-protected-button-container-shape: 10px;
+  --mdc-text-button-container-shape: 10px;
+  --mdc-filled-button-container-height: 42px;
+  --mdc-outlined-button-container-height: 42px;
+  --mdc-protected-button-container-height: 42px;
+}
+.mat-mdc-card { background: #fff !important; border: 1px solid var(--borde); border-radius: var(--radio) !important; box-shadow: 0 1px 2px rgba(16, 24, 40, .05) !important; margin-bottom: 16px; }
+.mat-mdc-card-title { font-size: 1.05rem !important; font-weight: 500 !important; }
+.mat-mdc-form-field { --mdc-outlined-text-field-container-shape: 10px; }
+.mat-mdc-form-field-icon-prefix > .mat-icon { padding: 0 10px 0 4px; color: var(--texto-suave); }
+
+/* ===== Estructura de página ===== */
 .page { padding: 24px; max-width: 1280px; margin: 0 auto; }
 .page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
 .page-header h1 { margin: 0; font-size: 1.5rem; font-weight: 500; }
 .toolbar-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .full { width: 100%; }
-.table-wrap { overflow-x: auto; background: #fff; border-radius: 8px; }
-.mat-mdc-card { margin-bottom: 16px; }
-.muted { color: rgba(0, 0, 0, .6); }
+.table-wrap { overflow-x: auto; background: #fff; border: 1px solid var(--borde); border-radius: var(--radio); }
+.muted { color: var(--texto-suave); }
 .right { text-align: right; }
-.chip { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: .75rem; background: #e0e0e0; }
-.chip.ok { background: #c8e6c9; color: #1b5e20; }
-.chip.warn { background: #ffe0b2; color: #e65100; }
-.chip.bad { background: #ffcdd2; color: #b71c1c; }
-.chip.info { background: #bbdefb; color: #0d47a1; }
 .empty { padding: 32px; text-align: center; color: rgba(0, 0, 0, .5); }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 16px; }
 .form-grid .span-2 { grid-column: span 2; }
-@media (max-width: 600px) { .form-grid .span-2 { grid-column: span 1; } .page { padding: 12px; } }
+
+/* ===== Chips de estado ===== */
+.chip { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: .75rem; font-weight: 500; background: #E4E9EC; color: #33414A; white-space: nowrap; }
+.chip.ok { background: #D4EDDA; color: #14532D; }
+.chip.warn { background: #FFE8CC; color: #9A3F00; }
+.chip.bad { background: #FDD9DC; color: #8E1B26; }
+.chip.info { background: var(--brand-light); color: var(--brand-dark); }
+
+/* ===== Celular: tablas como tarjetas =====
+   Cada <td> lleva data-label con el nombre de su columna. */
+@media (max-width: 700px) {
+  .page { padding: 12px; }
+  .page-header h1 { font-size: 1.3rem; }
+  .form-grid .span-2 { grid-column: span 1; }
+  .page-header > a.mat-mdc-button-base, .page-header > button.mat-mdc-button-base { flex: 1 1 100%; }
+
+  .tabla-cards.table-wrap { background: transparent; border: 0; border-radius: 0; overflow: visible; }
+  .tabla-cards table, .tabla-cards tbody, .tabla-cards tr, .tabla-cards td { display: block; width: 100%; box-sizing: border-box; }
+  .tabla-cards thead, .tabla-cards tr.mat-mdc-header-row { display: none; }
+  .tabla-cards tr.mat-mdc-row, .tabla-cards tbody tr {
+    height: auto; margin: 0 0 10px; padding: 8px 14px; background: #fff;
+    border: 1px solid var(--borde); border-radius: var(--radio); box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+  }
+  .tabla-cards td, .tabla-cards td.mat-mdc-cell {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 6px 0; min-height: 0; border: 0; text-align: right;
+  }
+  .tabla-cards td::before { content: attr(data-label); flex: 0 0 36%; text-align: left; font-size: .78rem; font-weight: 500; color: var(--texto-suave); }
+  .tabla-cards td[data-label=""]::before { display: none; }
+  .tabla-cards td[data-label=""] { justify-content: flex-end; }
+  .tabla-cards td { flex-wrap: wrap; }
+  .tabla-cards td > * { max-width: 62%; }
+  .tabla-cards td > .muted { flex: 0 0 100%; max-width: 100%; text-align: right; overflow-wrap: anywhere; }
+}
+@media (max-width: 400px) { .mat-mdc-snack-bar-container { margin: 8px !important; } }

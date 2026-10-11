@@ -16,6 +16,9 @@ export interface Empresa {
 }
 export type EmpresaRequest = Omit<Empresa, 'id'>;
 
+/** Identidad visual de la empresa. `logo` es una ruta estática (/brand/...) o un data URL. */
+export interface Marca { colorPrimario?: string | null; colorSecundario?: string | null; logo?: string | null; }
+
 export interface Sucursal {
   id: number; empresaId?: number | null; codigo: string; nombre: string; direccion?: string | null;
   telefono?: string | null; correo?: string | null; ciudad?: string | null; provincia?: string | null; estado?: string | null;

@@ -86,16 +86,16 @@ export class SucursalDialogComponent {
         <h1>Sucursales</h1>
         <button mat-flat-button color="primary" (click)="abrir(null)"><mat-icon>add</mat-icon> Nueva sucursal</button>
       </div>
-      <div class="table-wrap">
+      <div class="table-wrap tabla-cards">
         <table mat-table [dataSource]="sucursales()" class="full">
           @if (auth.hasRole('SUPERADMIN')) {
-            <ng-container matColumnDef="empresa"><th mat-header-cell *matHeaderCellDef>Empresa</th><td mat-cell *matCellDef="let s">{{ nombreEmpresa(s.empresaId) }}</td></ng-container>
+            <ng-container matColumnDef="empresa"><th mat-header-cell *matHeaderCellDef>Empresa</th><td mat-cell *matCellDef="let s" data-label="Empresa">{{ nombreEmpresa(s.empresaId) }}</td></ng-container>
           }
-          <ng-container matColumnDef="codigo"><th mat-header-cell *matHeaderCellDef>Código</th><td mat-cell *matCellDef="let s">{{ s.codigo }}</td></ng-container>
-          <ng-container matColumnDef="nombre"><th mat-header-cell *matHeaderCellDef>Nombre</th><td mat-cell *matCellDef="let s"><strong>{{ s.nombre }}</strong><div class="muted">{{ s.direccion }}</div></td></ng-container>
-          <ng-container matColumnDef="ciudad"><th mat-header-cell *matHeaderCellDef>Ciudad</th><td mat-cell *matCellDef="let s">{{ s.ciudad || '—' }}</td></ng-container>
-          <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let s"><span class="chip" [class]="claseEstado(s.estado)">{{ etiqueta(s.estado) }}</span></td></ng-container>
-          <ng-container matColumnDef="acciones"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let s" class="right"><button mat-icon-button (click)="abrir(s)" aria-label="Editar"><mat-icon>edit</mat-icon></button></td></ng-container>
+          <ng-container matColumnDef="codigo"><th mat-header-cell *matHeaderCellDef>Código</th><td mat-cell *matCellDef="let s" data-label="Código">{{ s.codigo }}</td></ng-container>
+          <ng-container matColumnDef="nombre"><th mat-header-cell *matHeaderCellDef>Nombre</th><td mat-cell *matCellDef="let s" data-label="Nombre"><strong>{{ s.nombre }}</strong><div class="muted">{{ s.direccion }}</div></td></ng-container>
+          <ng-container matColumnDef="ciudad"><th mat-header-cell *matHeaderCellDef>Ciudad</th><td mat-cell *matCellDef="let s" data-label="Ciudad">{{ s.ciudad || '—' }}</td></ng-container>
+          <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let s" data-label="Estado"><span class="chip" [class]="claseEstado(s.estado)">{{ etiqueta(s.estado) }}</span></td></ng-container>
+          <ng-container matColumnDef="acciones"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let s" data-label="" class="right"><button mat-icon-button (click)="abrir(s)" aria-label="Editar"><mat-icon>edit</mat-icon></button></td></ng-container>
           <tr mat-header-row *matHeaderRowDef="columnas"></tr><tr mat-row *matRowDef="let row; columns: columnas"></tr>
         </table>
         @if (sucursales().length === 0) { <div class="empty">No hay sucursales.</div> }

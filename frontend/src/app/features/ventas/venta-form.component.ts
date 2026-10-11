@@ -61,17 +61,17 @@ const redondear = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
           </mat-form-field>
 
           @if (lineas().length) {
-            <div class="table-wrap"><table class="lineas">
+            <div class="table-wrap tabla-cards"><table class="lineas">
               <thead><tr><th>Producto</th><th class="right">Precio</th><th>Cant.</th><th>Descuento</th><th class="right">Subtotal</th><th></th></tr></thead>
               <tbody>
                 @for (l of lineas(); track l.productoId; let i = $index) {
                   <tr>
-                    <td>{{ l.nombre }}</td>
-                    <td class="right">{{ l.precio | currency: auth.moneda() }}</td>
-                    <td><input class="num" type="number" min="1" step="1" [value]="l.cantidad" (input)="cambiar(i, 'cantidad', $any($event.target).value)"></td>
-                    <td><input class="num" type="number" min="0" step="0.01" [value]="l.descuento" (input)="cambiar(i, 'descuento', $any($event.target).value)"></td>
-                    <td class="right">{{ subtotalLinea(l) | currency: auth.moneda() }}</td>
-                    <td><button mat-icon-button (click)="quitar(i)" aria-label="Quitar"><mat-icon>close</mat-icon></button></td>
+                    <td data-label="Producto"><strong>{{ l.nombre }}</strong></td>
+                    <td class="right" data-label="Precio">{{ l.precio | currency: auth.moneda() }}</td>
+                    <td data-label="Cantidad"><input class="num" type="number" min="1" step="1" [value]="l.cantidad" (input)="cambiar(i, 'cantidad', $any($event.target).value)"></td>
+                    <td data-label="Descuento"><input class="num" type="number" min="0" step="0.01" [value]="l.descuento" (input)="cambiar(i, 'descuento', $any($event.target).value)"></td>
+                    <td class="right" data-label="Subtotal">{{ subtotalLinea(l) | currency: auth.moneda() }}</td>
+                    <td data-label=""><button mat-icon-button (click)="quitar(i)" aria-label="Quitar"><mat-icon>close</mat-icon></button></td>
                   </tr>
                 }
               </tbody>

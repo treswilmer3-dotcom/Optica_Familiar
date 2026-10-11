@@ -99,3 +99,26 @@ public class UsuarioDto
     public string? Estado { get; set; }
     public DateTime? UltimoAcceso { get; set; }
 }
+
+/// <summary>Identidad visual de la empresa.</summary>
+public class MarcaDto
+{
+    /// <summary>Color principal (#RRGGBB). Nulo = color por defecto de la plataforma.</summary>
+    public string? ColorPrimario { get; set; }
+    /// <summary>Color de acento (#RRGGBB).</summary>
+    public string? ColorSecundario { get; set; }
+    /// <summary>Ruta estática (/brand/...) o data URL de una imagen png, jpeg o webp.</summary>
+    public string? Logo { get; set; }
+}
+
+public class MarcaRequest
+{
+    [RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "El color debe tener el formato #RRGGBB.")]
+    public string? ColorPrimario { get; set; }
+
+    [RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "El color debe tener el formato #RRGGBB.")]
+    public string? ColorSecundario { get; set; }
+
+    [MaxLength(400_000, ErrorMessage = "El logo es demasiado grande (máximo ~300 KB).")]
+    public string? Logo { get; set; }
+}

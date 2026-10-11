@@ -37,6 +37,10 @@ Numeración (numeracion_documento, por sucursal y tipo)
 
 Baja lógica
   cliente se da de baja con persona.estado = INACTIVO (conserva historial)
+
+Identidad visual (empresa_configuracion)
+  logo (text): ruta estática /brand/... o data URL de imagen
+  color_primario, color_secundario: #RRGGBB
 ```
 
 ---

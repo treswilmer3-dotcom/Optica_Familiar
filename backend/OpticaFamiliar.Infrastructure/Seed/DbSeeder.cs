@@ -47,6 +47,8 @@ public class DbSeeder
         var plataformaSuc = await AsegurarSucursal(plataforma, "PLAT", "Operación de la plataforma", ct);
         var empresa = await AsegurarEmpresa("OPTICA-FAMILIAR", "Óptica Familiar", "0000000000001", ct);
         var sucursal = await AsegurarSucursal(empresa, "MATRIZ", "Sucursal Matriz", ct, "Quito", "Pichincha");
+        // Identidad visual de Óptica Familiar (el logo es un recurso estático del frontend).
+        await AsegurarMarcaAsync(_db, empresa.Id, "#1F7391", "#4494AC", "/brand/optica-familiar.png", ct);
 
         foreach (var (codigo, nombre, desc) in new[]
         {
@@ -69,6 +71,14 @@ public class DbSeeder
 
         await AsegurarUsuario(plataforma, plataformaSuc, "superadmin", Roles.SuperAdmin, "Super", "Administrador", _opts.SuperAdminPassword, ct);
         await AsegurarUsuario(empresa, sucursal, "admin", Roles.Administrador, "Administrador", "Sistema", _opts.AdminPassword, ct);
+    }
+
+    /// <summary>Crea la identidad visual de la empresa si aún no existe (no pisa cambios hechos desde la aplicación).</summary>
+    internal static async Task AsegurarMarcaAsync(AppDbContext db, long empresaId, string primario, string secundario, string? logo, CancellationToken ct)
+    {
+        if (await db.EmpresaConfiguraciones.IgnoreQueryFilters().AnyAsync(c => c.EmpresaId == empresaId, ct)) return;
+        db.EmpresaConfiguraciones.Add(new EmpresaConfiguracion { EmpresaId = empresaId, ColorPrimario = primario, ColorSecundario = secundario, Logo = logo });
+        await db.SaveChangesAsync(ct);
     }
 
     private async Task<Empresa> AsegurarEmpresa(string codigo, string nombre, string fiscal, CancellationToken ct)

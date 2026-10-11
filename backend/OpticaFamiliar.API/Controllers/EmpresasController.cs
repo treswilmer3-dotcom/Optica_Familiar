@@ -18,6 +18,13 @@ public class EmpresasController : ControllerBase
     [HttpGet("actual")]
     public async Task<ActionResult<EmpresaDto>> Actual(CancellationToken ct) => Ok(await _svc.ObtenerActualAsync(ct));
 
+    /// <summary>Identidad visual (logo y colores) de la empresa del usuario.</summary>
+    [HttpGet("actual/marca")]
+    public async Task<ActionResult<MarcaDto>> Marca(CancellationToken ct) => Ok(await _svc.ObtenerMarcaAsync(ct));
+
+    [HttpPut("actual/marca"), Authorize(Roles = Roles.Administrador)]
+    public async Task<ActionResult<MarcaDto>> ActualizarMarca(MarcaRequest r, CancellationToken ct) => Ok(await _svc.ActualizarMarcaAsync(r, ct));
+
     [HttpGet, Authorize(Roles = Roles.SuperAdmin)]
     public async Task<ActionResult<IReadOnlyList<EmpresaDto>>> Listar(CancellationToken ct) => Ok(await _svc.ListarAsync(ct));
 

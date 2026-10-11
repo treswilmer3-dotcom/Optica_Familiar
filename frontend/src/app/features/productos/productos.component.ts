@@ -79,12 +79,12 @@ export class ProductoDialogComponent implements OnInit {
         <input matInput [formControl]="buscar" autocomplete="off">
       </mat-form-field>
       @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
-      <div class="table-wrap">
+      <div class="table-wrap tabla-cards">
         <table mat-table [dataSource]="productos()" class="full">
-          <ng-container matColumnDef="codigo"><th mat-header-cell *matHeaderCellDef>Código</th><td mat-cell *matCellDef="let p">{{ p.codigo }}</td></ng-container>
-          <ng-container matColumnDef="nombre"><th mat-header-cell *matHeaderCellDef>Producto</th><td mat-cell *matCellDef="let p"><strong>{{ p.nombre }}</strong><div class="muted">{{ p.descripcion }}</div></td></ng-container>
-          <ng-container matColumnDef="categoria"><th mat-header-cell *matHeaderCellDef>Categoría</th><td mat-cell *matCellDef="let p">{{ p.categoria }}</td></ng-container>
-          <ng-container matColumnDef="precio"><th mat-header-cell *matHeaderCellDef class="right">Precio</th><td mat-cell *matCellDef="let p" class="right">{{ p.precio | currency: auth.moneda() }}</td></ng-container>
+          <ng-container matColumnDef="codigo"><th mat-header-cell *matHeaderCellDef>Código</th><td mat-cell *matCellDef="let p" data-label="Código">{{ p.codigo }}</td></ng-container>
+          <ng-container matColumnDef="nombre"><th mat-header-cell *matHeaderCellDef>Producto</th><td mat-cell *matCellDef="let p" data-label="Producto"><strong>{{ p.nombre }}</strong><div class="muted">{{ p.descripcion }}</div></td></ng-container>
+          <ng-container matColumnDef="categoria"><th mat-header-cell *matHeaderCellDef>Categoría</th><td mat-cell *matCellDef="let p" data-label="Categoría">{{ p.categoria }}</td></ng-container>
+          <ng-container matColumnDef="precio"><th mat-header-cell *matHeaderCellDef class="right">Precio</th><td mat-cell *matCellDef="let p" data-label="Precio" class="right">{{ p.precio | currency: auth.moneda() }}</td></ng-container>
           <tr mat-header-row *matHeaderRowDef="columnas"></tr><tr mat-row *matRowDef="let row; columns: columnas"></tr>
         </table>
         @if (!cargando() && productos().length === 0) { <div class="empty">No hay productos.</div> }

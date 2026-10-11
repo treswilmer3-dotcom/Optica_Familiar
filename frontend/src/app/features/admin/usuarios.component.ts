@@ -117,18 +117,18 @@ export class UsuarioDialogComponent {
         <h1>Usuarios</h1>
         <button mat-flat-button color="primary" (click)="abrir(null)"><mat-icon>person_add</mat-icon> Nuevo usuario</button>
       </div>
-      <div class="table-wrap">
+      <div class="table-wrap tabla-cards">
         <table mat-table [dataSource]="usuarios()" class="full">
           @if (auth.hasRole('SUPERADMIN')) {
-            <ng-container matColumnDef="empresa"><th mat-header-cell *matHeaderCellDef>Empresa</th><td mat-cell *matCellDef="let u">{{ nombreEmpresa(u.empresaId) }}</td></ng-container>
+            <ng-container matColumnDef="empresa"><th mat-header-cell *matHeaderCellDef>Empresa</th><td mat-cell *matCellDef="let u" data-label="Empresa">{{ nombreEmpresa(u.empresaId) }}</td></ng-container>
           }
-          <ng-container matColumnDef="usuario"><th mat-header-cell *matHeaderCellDef>Usuario</th><td mat-cell *matCellDef="let u"><strong>{{ u.username }}</strong><div class="muted">{{ u.nombreCompleto }}</div></td></ng-container>
-          <ng-container matColumnDef="rol"><th mat-header-cell *matHeaderCellDef>Rol</th><td mat-cell *matCellDef="let u">{{ u.rol }}</td></ng-container>
-          <ng-container matColumnDef="sucursal"><th mat-header-cell *matHeaderCellDef>Sucursal</th><td mat-cell *matCellDef="let u">{{ u.sucursal }}</td></ng-container>
-          <ng-container matColumnDef="acceso"><th mat-header-cell *matHeaderCellDef>Último acceso</th><td mat-cell *matCellDef="let u">{{ u.ultimoAcceso ? (u.ultimoAcceso | date: 'dd/MM/yyyy HH:mm') : 'Nunca' }}</td></ng-container>
-          <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let u"><span class="chip" [class]="claseEstado(u.estado)">{{ etiqueta(u.estado) }}</span></td></ng-container>
+          <ng-container matColumnDef="usuario"><th mat-header-cell *matHeaderCellDef>Usuario</th><td mat-cell *matCellDef="let u" data-label="Usuario"><strong>{{ u.username }}</strong><div class="muted">{{ u.nombreCompleto }}</div></td></ng-container>
+          <ng-container matColumnDef="rol"><th mat-header-cell *matHeaderCellDef>Rol</th><td mat-cell *matCellDef="let u" data-label="Rol">{{ u.rol }}</td></ng-container>
+          <ng-container matColumnDef="sucursal"><th mat-header-cell *matHeaderCellDef>Sucursal</th><td mat-cell *matCellDef="let u" data-label="Sucursal">{{ u.sucursal }}</td></ng-container>
+          <ng-container matColumnDef="acceso"><th mat-header-cell *matHeaderCellDef>Último acceso</th><td mat-cell *matCellDef="let u" data-label="Último acceso">{{ u.ultimoAcceso ? (u.ultimoAcceso | date: 'dd/MM/yyyy HH:mm') : 'Nunca' }}</td></ng-container>
+          <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let u" data-label="Estado"><span class="chip" [class]="claseEstado(u.estado)">{{ etiqueta(u.estado) }}</span></td></ng-container>
           <ng-container matColumnDef="acciones"><th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let u" class="right">
+            <td mat-cell *matCellDef="let u" data-label="" class="right">
               <button mat-icon-button (click)="abrir(u)" aria-label="Editar"><mat-icon>edit</mat-icon></button>
               @if (u.id !== auth.session()?.usuarioId) { <button mat-icon-button (click)="clave(u)" aria-label="Restablecer contraseña"><mat-icon>key</mat-icon></button> }
             </td></ng-container>

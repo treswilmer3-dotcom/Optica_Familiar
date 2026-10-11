@@ -30,6 +30,17 @@ Sucursales: **QUITO** (Pichincha), **GUAYAQUIL** (Guayas), **CUENCA** (Azuay).
 Registros: 12 clientes, 9 productos (monturas, lentes, servicios), 9 exámenes (8 con receta), 8 órdenes de trabajo en
 todos los estados, 9 ventas (pagadas, con saldo pendiente y una anulada) y sus pagos.
 
+## Identidad visual de las empresas
+
+| Empresa | Color principal | Acento | Logo |
+|---|---|---|---|
+| `OPTICA-FAMILIAR` | `#1F7391` (turquesa) | `#4494AC` | `/brand/optica-familiar.png` |
+| `DEMO-ANDINA` | `#2E6F4E` (verde) | `#F2A33A` | sin logo (muestra iniciales) |
+| `DEMO-SIERRA` | `#8A4B14` (café) | `#E0A030` | sin logo (muestra iniciales) |
+| `PLATAFORMA` | por defecto | por defecto | sin logo |
+
+Sirven para comprobar visualmente que cada empresa conserva su propia identidad.
+
 ## DEMO-SIERRA (Ecuador · USD · IVA 15 %)
 
 Sucursal **AMBATO** (Tungurahua). Usuarios `admin`, `vend.ambato`, `opto.ambato`.

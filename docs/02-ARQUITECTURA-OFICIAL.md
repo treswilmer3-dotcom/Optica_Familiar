@@ -173,10 +173,10 @@ Fase 1 — **Completada**
 - Seguridad, multiempresa, clientes, optometría, ventas y órdenes de trabajo
 - Frontend funcional con control por roles
 
-Fase 1.5 — Afinamiento y entrega (siguiente)
+Fase 1.5 — Afinamiento y entrega (en curso)
 
-- Identidad visual: logo y colores por empresa (`empresa_configuracion` ya modela logo y colores)
-- Ajustes de interfaz para computador y celular
+- ~~Identidad visual: logo y colores por empresa~~ — **hecho**
+- ~~Ajustes de interfaz para computador y celular~~ — **hecho** (menú lateral, tablas como tarjetas en celular)
 - Cambio de credenciales iniciales y carga de datos reales
 - Empaquetado con Docker / Docker Compose y despliegue desde registro de contenedores
 
@@ -239,6 +239,21 @@ Reglas:
   las ventas se limitan a la sucursal del usuario, salvo para `ADMIN`.
 
 Detalle de tablas y unicidades en `05-Modelo-Logico.md`.
+
+---
+
+# Identidad visual por empresa
+
+Cada empresa define su logo y sus colores (`empresa_configuracion.logo`, `color_primario`, `color_secundario`):
+
+- `GET /api/empresas/actual/marca` (todos) y `PUT /api/empresas/actual/marca` (solo `ADMIN`).
+- El frontend aplica los colores como variables CSS (`--brand*`) y reemplaza las variables de color de Angular Material
+  en tiempo de ejecución (`BrandService`); sin marca usa la paleta de la plataforma (turquesa `#1F7391`).
+- Se garantiza contraste AA (4.5:1) del texto blanco sobre el color principal: si el color elegido no lo cumple, se oscurece.
+- El logo es una ruta estática propia (`/brand/...`) o una imagen PNG/JPEG/WebP en *data URL* (máx. ~300 KB, el frontend la
+  reduce al subirla). El servidor rechaza SVG, URLs externas, rutas con `..` y datos que no sean una imagen válida.
+- La última marca conocida se guarda en el navegador para que la pantalla de ingreso conserve la identidad.
+- Tras actualizar Angular Material se regenera la lista de variables con `node frontend/scripts/generar-tokens-material.mjs`.
 
 ---
 

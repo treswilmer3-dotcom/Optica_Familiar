@@ -30,17 +30,17 @@ import { claseEstado, confirmar, etiquetaEstado } from '../../shared/ui';
         </mat-form-field>
       </div>
       @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
-      <div class="table-wrap">
+      <div class="table-wrap tabla-cards">
         <table mat-table [dataSource]="ordenes()" class="full">
-          <ng-container matColumnDef="numero"><th mat-header-cell *matHeaderCellDef>Orden</th><td mat-cell *matCellDef="let o"><strong>{{ o.numeroOrden }}</strong></td></ng-container>
-          <ng-container matColumnDef="ingreso"><th mat-header-cell *matHeaderCellDef>Ingreso</th><td mat-cell *matCellDef="let o">{{ o.fechaIngreso | date: 'dd/MM/yyyy' }}</td></ng-container>
+          <ng-container matColumnDef="numero"><th mat-header-cell *matHeaderCellDef>Orden</th><td mat-cell *matCellDef="let o" data-label="Orden"><strong>{{ o.numeroOrden }}</strong></td></ng-container>
+          <ng-container matColumnDef="ingreso"><th mat-header-cell *matHeaderCellDef>Ingreso</th><td mat-cell *matCellDef="let o" data-label="Ingreso">{{ o.fechaIngreso | date: 'dd/MM/yyyy' }}</td></ng-container>
           <ng-container matColumnDef="entrega"><th mat-header-cell *matHeaderCellDef>Entrega estimada</th>
-            <td mat-cell *matCellDef="let o">{{ o.fechaEntregaReal ? (o.fechaEntregaReal | date: 'dd/MM/yyyy') : (o.fechaEntregaEstimada ? (o.fechaEntregaEstimada | date: 'dd/MM/yyyy') : '—') }}</td></ng-container>
-          <ng-container matColumnDef="venta"><th mat-header-cell *matHeaderCellDef>Venta</th><td mat-cell *matCellDef="let o">{{ o.ventaId ? '#' + o.ventaId : 'Sin facturar' }}</td></ng-container>
+            <td mat-cell *matCellDef="let o" data-label="Entrega estimada">{{ o.fechaEntregaReal ? (o.fechaEntregaReal | date: 'dd/MM/yyyy') : (o.fechaEntregaEstimada ? (o.fechaEntregaEstimada | date: 'dd/MM/yyyy') : '—') }}</td></ng-container>
+          <ng-container matColumnDef="venta"><th mat-header-cell *matHeaderCellDef>Venta</th><td mat-cell *matCellDef="let o" data-label="Venta">{{ o.ventaId ? '#' + o.ventaId : 'Sin facturar' }}</td></ng-container>
           <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let o"><span class="chip" [class]="claseEstado(o.estado)">{{ etiqueta(o.estado) }}</span></td></ng-container>
+            <td mat-cell *matCellDef="let o" data-label="Estado"><span class="chip" [class]="claseEstado(o.estado)">{{ etiqueta(o.estado) }}</span></td></ng-container>
           <ng-container matColumnDef="acciones"><th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let o" class="right">
+            <td mat-cell *matCellDef="let o" data-label="" class="right">
               @if (puedeAvanzar && siguiente(o); as s) {
                 <button mat-stroked-button color="primary" (click)="avanzar(o, s)">Pasar a {{ etiqueta(s) }}</button>
               }

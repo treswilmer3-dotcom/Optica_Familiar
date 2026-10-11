@@ -39,12 +39,12 @@ import { claseEstado, confirmar, etiquetaEstado, txt } from '../../shared/ui';
         </div>
 
         <mat-card><mat-card-content>
-          <div class="table-wrap"><table class="detalle">
+          <div class="table-wrap tabla-cards"><table class="detalle">
             <thead><tr><th>Producto</th><th class="right">Precio</th><th class="right">Cant.</th><th class="right">Desc.</th><th class="right">Subtotal</th></tr></thead>
             <tbody>
               @for (d of v.detalles; track d.id) {
-                <tr><td>{{ d.producto }}</td><td class="right">{{ d.precioUnitario | currency: auth.moneda() }}</td><td class="right">{{ d.cantidad }}</td>
-                  <td class="right">{{ d.descuento | currency: auth.moneda() }}</td><td class="right">{{ d.subtotal | currency: auth.moneda() }}</td></tr>
+                <tr><td data-label="Producto"><strong>{{ d.producto }}</strong></td><td class="right" data-label="Precio">{{ d.precioUnitario | currency: auth.moneda() }}</td><td class="right" data-label="Cantidad">{{ d.cantidad }}</td>
+                  <td class="right" data-label="Descuento">{{ d.descuento | currency: auth.moneda() }}</td><td class="right" data-label="Subtotal">{{ d.subtotal | currency: auth.moneda() }}</td></tr>
               }
             </tbody>
           </table></div>

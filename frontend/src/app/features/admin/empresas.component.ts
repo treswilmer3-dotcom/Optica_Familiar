@@ -94,14 +94,14 @@ export class EmpresaDialogComponent {
         <button mat-flat-button color="primary" (click)="abrir(null)"><mat-icon>add_business</mat-icon> Nueva empresa</button>
       </div>
       <p class="muted">Tras crear una empresa, cree su primera sucursal (menú Sucursales) y su usuario administrador (menú Usuarios).</p>
-      <div class="table-wrap">
+      <div class="table-wrap tabla-cards">
         <table mat-table [dataSource]="empresas()" class="full">
-          <ng-container matColumnDef="codigo"><th mat-header-cell *matHeaderCellDef>Código</th><td mat-cell *matCellDef="let e">{{ e.codigo }}</td></ng-container>
-          <ng-container matColumnDef="nombre"><th mat-header-cell *matHeaderCellDef>Empresa</th><td mat-cell *matCellDef="let e"><strong>{{ e.nombreComercial }}</strong><div class="muted">{{ e.razonSocial }}</div></td></ng-container>
-          <ng-container matColumnDef="fiscal"><th mat-header-cell *matHeaderCellDef>Identificación fiscal</th><td mat-cell *matCellDef="let e">{{ e.pais }} · {{ e.identificacionFiscal }}</td></ng-container>
-          <ng-container matColumnDef="moneda"><th mat-header-cell *matHeaderCellDef>Moneda / IVA</th><td mat-cell *matCellDef="let e">{{ e.moneda }} · {{ e.ivaPorcentaje }}%</td></ng-container>
-          <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let e"><span class="chip" [class]="claseEstado(e.estado)">{{ etiqueta(e.estado) }}</span></td></ng-container>
-          <ng-container matColumnDef="acciones"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let e" class="right"><button mat-icon-button (click)="abrir(e)" aria-label="Editar"><mat-icon>edit</mat-icon></button></td></ng-container>
+          <ng-container matColumnDef="codigo"><th mat-header-cell *matHeaderCellDef>Código</th><td mat-cell *matCellDef="let e" data-label="Código">{{ e.codigo }}</td></ng-container>
+          <ng-container matColumnDef="nombre"><th mat-header-cell *matHeaderCellDef>Empresa</th><td mat-cell *matCellDef="let e" data-label="Empresa"><strong>{{ e.nombreComercial }}</strong><div class="muted">{{ e.razonSocial }}</div></td></ng-container>
+          <ng-container matColumnDef="fiscal"><th mat-header-cell *matHeaderCellDef>Identificación fiscal</th><td mat-cell *matCellDef="let e" data-label="Identificación fiscal">{{ e.pais }} · {{ e.identificacionFiscal }}</td></ng-container>
+          <ng-container matColumnDef="moneda"><th mat-header-cell *matHeaderCellDef>Moneda / IVA</th><td mat-cell *matCellDef="let e" data-label="Moneda / IVA">{{ e.moneda }} · {{ e.ivaPorcentaje }}%</td></ng-container>
+          <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th><td mat-cell *matCellDef="let e" data-label="Estado"><span class="chip" [class]="claseEstado(e.estado)">{{ etiqueta(e.estado) }}</span></td></ng-container>
+          <ng-container matColumnDef="acciones"><th mat-header-cell *matHeaderCellDef></th><td mat-cell *matCellDef="let e" data-label="" class="right"><button mat-icon-button (click)="abrir(e)" aria-label="Editar"><mat-icon>edit</mat-icon></button></td></ng-container>
           <tr mat-header-row *matHeaderRowDef="columnas"></tr><tr mat-row *matRowDef="let row; columns: columnas"></tr>
         </table>
       </div>

@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../core/auth/auth.service';
+import { BrandService } from '../../core/brand/brand.service';
 
 const CODIGO_KEY = 'of_codigo_empresa';
 
@@ -18,9 +19,9 @@ const CODIGO_KEY = 'of_codigo_empresa';
   template: `
     <div class="fondo">
       <mat-card class="tarjeta">
-        <div class="logo"><mat-icon>visibility</mat-icon></div>
-        <h1>Óptica Familiar</h1>
-        <p class="muted">Ingrese con su código de empresa</p>
+        @if (brand.logo(); as logo) { <img class="logo" [src]="logo" alt="Logo"> } @else { <div class="logo icono"><mat-icon>visibility</mat-icon></div> }
+        <h1>Bienvenido</h1>
+        <p class="muted">Ingrese con el código de su empresa</p>
         <form [formGroup]="form" (ngSubmit)="entrar()">
           <mat-form-field appearance="outline" class="full">
             <mat-label>Código de empresa</mat-label>
@@ -48,19 +49,23 @@ const CODIGO_KEY = 'of_codigo_empresa';
       </mat-card>
     </div>`,
   styles: [`
-    .fondo { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e3f2fd, #f5f6fa); padding: 16px; }
-    .tarjeta { width: 100%; max-width: 400px; padding: 28px 24px; text-align: center; }
-    .logo mat-icon { font-size: 48px; width: 48px; height: 48px; color: #1565c0; }
-    h1 { margin: 4px 0 0; font-weight: 500; }
+    .fondo { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px;
+      background: radial-gradient(circle at 20% 15%, var(--brand) 0, transparent 45%), linear-gradient(135deg, var(--sidebar-bg), #11161a); }
+    .tarjeta { width: 100%; max-width: 400px; padding: 30px 26px 26px; text-align: center; border-radius: 18px !important; box-shadow: 0 20px 50px rgba(0,0,0,.35) !important; margin: 0; }
+    .logo { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; margin: -74px auto 6px; display: block; box-shadow: 0 6px 20px rgba(0,0,0,.35), 0 0 0 4px #fff; background: #fff; }
+    .logo.icono { display: flex; align-items: center; justify-content: center; background: var(--brand); color: #fff; }
+    .logo.icono mat-icon { font-size: 60px; width: 60px; height: 60px; }
+    h1 { margin: 10px 0 0; font-weight: 500; }
     p { margin: 4px 0 20px; }
     form { text-align: left; }
-    .error { color: #b71c1c; margin: 0 0 12px; text-align: center; }
-    button[type=submit] { height: 44px; }
+    .error { color: #8E1B26; background: #FDD9DC; border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; text-align: center; font-size: .9rem; }
+    button[type=submit] { height: 46px; }
   `]
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  readonly brand = inject(BrandService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 

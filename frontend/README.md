@@ -13,7 +13,7 @@ La URL de la API se define en `src/environments/`. En producción usa la ruta re
 ## Estructura
 ```
 src/app/
-  core/      modelos de la API, servicios HTTP, autenticación (JWT), interceptor y guardas por rol
+  core/      modelos de la API, servicios HTTP, autenticación (JWT), interceptor, guardas por rol e identidad visual (brand/)
   layout/    shell con menú lateral según rol
   shared/    diálogos y utilidades comunes
   features/  login, inicio, clientes, optometria, ordenes, ventas, productos, admin
@@ -22,6 +22,7 @@ src/app/
 ## Notas
 - Login con **código de empresa** + usuario + contraseña; el token y la empresa viajan en cada petición.
 - El menú y las rutas se restringen por rol (`SUPERADMIN`, `ADMIN`, `VENDEDOR`, `OPTOMETRISTA`); la API es quien autoriza de verdad.
+- Logo y colores se toman de la empresa autenticada (`BrandService`); la pantalla «Identidad visual» (ADMIN) los edita con vista previa.
 - Moneda e IVA se toman de la empresa autenticada (`GET /api/empresas/actual`).
 - Los importes de la venta se previsualizan en el cliente, pero el servidor recalcula con precios e IVA oficiales.
 

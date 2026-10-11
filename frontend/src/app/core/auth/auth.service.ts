@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, catchError, of, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Empresa, LoginRequest, LoginResponse, Rol } from '../models/api.models';
+import { BrandService } from '../brand/brand.service';
 
 const STORAGE_KEY = 'of_session';
 
@@ -11,6 +12,7 @@ const STORAGE_KEY = 'of_session';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly brand = inject(BrandService);
 
   private readonly _session = signal<LoginResponse | null>(this.restore());
   private readonly _empresa = signal<Empresa | null>(null);
@@ -62,6 +64,7 @@ export class AuthService {
   private cargarEmpresa(): void {
     this.http.get<Empresa>(`${environment.apiUrl}/empresas/actual`).pipe(catchError(() => of(null)))
       .subscribe(e => this._empresa.set(e));
+    this.brand.cargar();
   }
 
   private restore(): LoginResponse | null {

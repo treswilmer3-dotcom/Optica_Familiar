@@ -46,5 +46,5 @@ docs/       Documentación de arquitectura, diseño, API y guías
 
 ## Estado
 
-Fase 1 completada y validada. Siguiente: afinamiento de interfaz (logo, colores, responsive), cambio de credenciales y
-empaquetado con Docker. Ver el roadmap en `docs/02-ARQUITECTURA-OFICIAL.md`.
+Fase 1 completada y validada. Fase 1.5 en curso: identidad visual por empresa (logo y colores) y diseño responsive ya
+terminados; siguen el cambio de credenciales y el empaquetado con Docker. Ver el roadmap en `docs/02-ARQUITECTURA-OFICIAL.md`.

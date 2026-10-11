@@ -12,6 +12,8 @@ public interface IEmpresaService
     Task<IReadOnlyList<EmpresaDto>> ListarAsync(CancellationToken ct = default);
     Task<EmpresaDto> ObtenerAsync(long id, CancellationToken ct = default);
     Task<EmpresaDto> ObtenerActualAsync(CancellationToken ct = default);
+    Task<MarcaDto> ObtenerMarcaAsync(CancellationToken ct = default);
+    Task<MarcaDto> ActualizarMarcaAsync(MarcaRequest request, CancellationToken ct = default);
     Task<EmpresaDto> CrearAsync(EmpresaRequest request, CancellationToken ct = default);
     Task<EmpresaDto> ActualizarAsync(long id, EmpresaRequest request, CancellationToken ct = default);
 }

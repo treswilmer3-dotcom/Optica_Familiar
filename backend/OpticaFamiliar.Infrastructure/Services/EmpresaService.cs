@@ -31,6 +31,40 @@ public class EmpresaService : IEmpresaService
         Map(await _db.Empresas.AsNoTracking().FirstOrDefaultAsync(e => e.Id == _current.EmpresaId, ct)
             ?? throw new NotFoundException("Empresa no encontrada."));
 
+    public async Task<MarcaDto> ObtenerMarcaAsync(CancellationToken ct = default)
+    {
+        var c = await _db.EmpresaConfiguraciones.AsNoTracking().FirstOrDefaultAsync(x => x.EmpresaId == _current.EmpresaId, ct);
+        return new MarcaDto { ColorPrimario = c?.ColorPrimario, ColorSecundario = c?.ColorSecundario, Logo = c?.Logo };
+    }
+
+    public async Task<MarcaDto> ActualizarMarcaAsync(MarcaRequest r, CancellationToken ct = default)
+    {
+        ValidarLogo(r.Logo);
+        var c = await _db.EmpresaConfiguraciones.FirstOrDefaultAsync(x => x.EmpresaId == _current.EmpresaId, ct);
+        if (c == null)
+        {
+            c = new EmpresaConfiguracion { EmpresaId = _current.EmpresaId };
+            _db.EmpresaConfiguraciones.Add(c);
+        }
+        c.ColorPrimario = r.ColorPrimario?.ToUpperInvariant();
+        c.ColorSecundario = r.ColorSecundario?.ToUpperInvariant();
+        c.Logo = string.IsNullOrWhiteSpace(r.Logo) ? null : r.Logo;
+        await _db.SaveChangesAsync(ct);
+        return await ObtenerMarcaAsync(ct);
+    }
+
+    /// <summary>Solo se admiten rutas estáticas propias (/brand/...) o imágenes raster en data URL (no SVG, para evitar contenido activo).</summary>
+    private static void ValidarLogo(string? logo)
+    {
+        if (string.IsNullOrWhiteSpace(logo)) return;
+        if (logo.StartsWith("/brand/", StringComparison.Ordinal) && !logo.Contains("..") && logo.Length <= 200) return;
+
+        var m = System.Text.RegularExpressions.Regex.Match(logo, @"^data:image/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$");
+        if (!m.Success) throw new BusinessRuleException("El logo debe ser una imagen PNG, JPEG o WebP.");
+        try { Convert.FromBase64String(m.Groups[2].Value); }
+        catch (FormatException) { throw new BusinessRuleException("El logo no es una imagen válida."); }
+    }
+
     public async Task<EmpresaDto> CrearAsync(EmpresaRequest r, CancellationToken ct = default)
     {
         await ValidarUnicidad(null, r, ct);

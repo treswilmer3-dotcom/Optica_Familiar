@@ -55,7 +55,8 @@ public class DemoDataSeeder
     private record EmpresaDef(
         string Codigo, string RazonSocial, string Nombre, string Ruc, string Direccion, string Telefono, string Correo,
         SucursalDef[] Sucursales, UsuarioDef[] Usuarios, ClienteDef[] Clientes, ProductoDef[] Productos,
-        ExamenDef[] Examenes, OrdenDef[] Ordenes, VentaDef[] Ventas);
+        ExamenDef[] Examenes, OrdenDef[] Ordenes, VentaDef[] Ventas,
+        string ColorPrimario, string ColorSecundario);
 
     private static readonly EmpresaDef Andina = new(
         CodigoAndina, "Visión Andina Cía. Ltda. (DEMO)", "Óptica Visión Andina", "1790000001001",
@@ -130,7 +131,7 @@ public class DemoDataSeeder
             new(8, "vend.guayaquil", 25, [new("MON-002", 1), new("LEN-002", 1)], [new("TARJETA", null)], Orden: 5),
             new(9, "vend.guayaquil", 10, [new("MON-001", 2)], [new("EFECTIVO", null)], Anulada: true),
             new(10, "vend.cuenca", 3, [new("SER-001", 1)], [new("EFECTIVO", null)])
-        ]);
+        ], "#2E6F4E", "#F2A33A");
 
     private static readonly EmpresaDef Sierra = new(
         CodigoSierra, "Óptica Sierra Norte S.A. (DEMO)", "Óptica Sierra Norte", "1890000002001",
@@ -171,7 +172,7 @@ public class DemoDataSeeder
             new(2, "vend.ambato", 12, [new("MON-002", 1), new("LEN-002", 1)], [new("TARJETA", 50)], Orden: 1),
             new(3, "vend.ambato", 7, [new("SER-001", 1)], [new("EFECTIVO", null)]),
             new(4, "vend.ambato", 2, [new("MON-002", 1)], [], Anulada: true)
-        ]);
+        ], "#8A4B14", "#E0A030");
 
     // ---- Carga -------------------------------------------------------------------------------------------
 
@@ -228,6 +229,7 @@ public class DemoDataSeeder
             _db.Empresas.Add(empresa);
             await _db.SaveChangesAsync(ct);
         }
+        await DbSeeder.AsegurarMarcaAsync(_db, empresa.Id, d.ColorPrimario, d.ColorSecundario, null, ct);
         if (await _db.Clientes.IgnoreQueryFilters().AnyAsync(c => c.EmpresaId == empresa.Id, ct)) return false;
 
         var eid = empresa.Id;

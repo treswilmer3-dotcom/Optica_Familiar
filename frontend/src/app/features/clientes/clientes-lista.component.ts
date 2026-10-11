@@ -35,23 +35,23 @@ const TAMANO = 15;
       </mat-form-field>
 
       @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
-      <div class="table-wrap">
+      <div class="table-wrap tabla-cards">
         <table mat-table [dataSource]="clientes()" class="full">
           <ng-container matColumnDef="identificacion">
             <th mat-header-cell *matHeaderCellDef>Identificación</th>
-            <td mat-cell *matCellDef="let c">{{ c.numeroIdentificacion }}</td>
+            <td mat-cell *matCellDef="let c" data-label="Identificación">{{ c.numeroIdentificacion }}</td>
           </ng-container>
           <ng-container matColumnDef="nombre">
             <th mat-header-cell *matHeaderCellDef>Cliente</th>
-            <td mat-cell *matCellDef="let c"><strong>{{ c.apellidos }} {{ c.nombres }}</strong></td>
+            <td mat-cell *matCellDef="let c" data-label="Cliente"><strong>{{ c.apellidos }} {{ c.nombres }}</strong></td>
           </ng-container>
           <ng-container matColumnDef="contacto">
             <th mat-header-cell *matHeaderCellDef>Contacto</th>
-            <td mat-cell *matCellDef="let c">{{ c.celular || c.telefono || '—' }}<div class="muted">{{ c.correo }}</div></td>
+            <td mat-cell *matCellDef="let c" data-label="Contacto">{{ c.celular || c.telefono || '—' }}<div class="muted">{{ c.correo }}</div></td>
           </ng-container>
           <ng-container matColumnDef="registro">
             <th mat-header-cell *matHeaderCellDef>Registro</th>
-            <td mat-cell *matCellDef="let c">{{ c.fechaRegistro | date: 'dd/MM/yyyy' }}</td>
+            <td mat-cell *matCellDef="let c" data-label="Registro">{{ c.fechaRegistro | date: 'dd/MM/yyyy' }}</td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="columnas"></tr>
           <tr mat-row *matRowDef="let row; columns: columnas" class="fila" (click)="abrir(row)"></tr>

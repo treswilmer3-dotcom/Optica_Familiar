@@ -82,6 +82,16 @@ PostgreSQL escucha solo en loopback de WSL; WSL2 reenvía `localhost`, así que 
 
 ---
 
+# Frontend: identidad visual
+
+- Logo y recursos de marca en `frontend/public/brand/` (`optica-familiar.png`, `icon-192.png`, `favicon.png`).
+- Paleta por defecto en `frontend/src/styles.scss` (variables `--brand*`); cada empresa la sobrescribe en ejecución.
+- Si se actualiza Angular Material: `node frontend/scripts/generar-tokens-material.mjs` y revisar el resultado.
+- En celular, las tablas se convierten en tarjetas: cada `<td>` lleva `data-label` con el nombre de su columna y el
+  contenedor la clase `tabla-cards`.
+
+---
+
 # Migraciones
 
 ```bash

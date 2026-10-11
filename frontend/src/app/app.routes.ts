@@ -58,7 +58,8 @@ export const routes: Routes = [
         canActivate: [roleGuard('ADMIN', 'SUPERADMIN')],
         children: [
           { path: 'sucursales', loadComponent: () => import('./features/admin/sucursales.component').then(m => m.SucursalesComponent) },
-          { path: 'usuarios', loadComponent: () => import('./features/admin/usuarios.component').then(m => m.UsuariosComponent) }
+          { path: 'usuarios', loadComponent: () => import('./features/admin/usuarios.component').then(m => m.UsuariosComponent) },
+          { path: 'marca', canActivate: [roleGuard('ADMIN')], loadComponent: () => import('./features/admin/marca.component').then(m => m.MarcaComponent) }
         ]
       },
       {

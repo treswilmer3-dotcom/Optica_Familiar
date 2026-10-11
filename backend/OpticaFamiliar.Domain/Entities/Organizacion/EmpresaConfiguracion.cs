@@ -15,8 +15,8 @@ namespace OpticaFamiliar.Domain.Entities.Organizacion
         [Required]
         public long EmpresaId { get; set; }
 
+        /// <summary>Logo como ruta estática (/brand/...) o data URL (png, jpeg o webp).</summary>
         [Column("logo")]
-        [MaxLength(500)]
         public string? Logo { get; set; }
 
         [Column("color_primario")]

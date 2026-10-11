@@ -58,6 +58,11 @@ chk "Sierra no accede a su historial (404)" 404 "$(status "$S" GET clientes/$CID
 chk "Misma cédula en ambas empresas = 2 clientes distintos" "1 1" "$(cuenta "$A" 'clientes?buscar=1700000011') $(cuenta "$S" 'clientes?buscar=1700000011')"
 chk "Andina no ve sucursales ni usuarios de Sierra" 0 "$(get "$A" sucursales | json "len([s for s in d if s['codigo']=='AMBATO'])")"
 
+echo "== Identidad visual por empresa"
+chk "Andina tiene su color principal" "#2E6F4E" "$(get "$A" empresas/actual/marca | json "d['colorPrimario']")"
+chk "Sierra tiene un color distinto" "#8A4B14" "$(get "$S" empresas/actual/marca | json "d['colorPrimario']")"
+chk "Vendedor no modifica la identidad visual (403)" 403 "$(status "$VQ" PUT empresas/actual/marca)"
+
 echo "== Permisos por rol y por sucursal"
 chk "Vendedor no registra exámenes (403)" 403 "$(status "$VQ" POST examenes-visuales)"
 chk "Optometrista no ve ventas (403)" 403 "$(status "$OQ" GET ventas)"

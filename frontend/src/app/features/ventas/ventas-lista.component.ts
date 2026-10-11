@@ -23,16 +23,16 @@ const TAMANO = 15;
         <a mat-flat-button color="primary" routerLink="/ventas/nueva"><mat-icon>add</mat-icon> Nueva venta</a>
       </div>
       @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
-      <div class="table-wrap">
+      <div class="table-wrap tabla-cards">
         <table mat-table [dataSource]="ventas()" class="full">
-          <ng-container matColumnDef="factura"><th mat-header-cell *matHeaderCellDef>Factura</th><td mat-cell *matCellDef="let v"><strong>{{ v.numeroFactura }}</strong></td></ng-container>
-          <ng-container matColumnDef="fecha"><th mat-header-cell *matHeaderCellDef>Fecha</th><td mat-cell *matCellDef="let v">{{ v.fechaVenta | date: 'dd/MM/yyyy HH:mm' }}</td></ng-container>
-          <ng-container matColumnDef="cliente"><th mat-header-cell *matHeaderCellDef>Cliente</th><td mat-cell *matCellDef="let v">{{ v.clienteNombre }}</td></ng-container>
-          <ng-container matColumnDef="total"><th mat-header-cell *matHeaderCellDef class="right">Total</th><td mat-cell *matCellDef="let v" class="right">{{ v.total | currency: auth.moneda() }}</td></ng-container>
+          <ng-container matColumnDef="factura"><th mat-header-cell *matHeaderCellDef>Factura</th><td mat-cell *matCellDef="let v" data-label="Factura"><strong>{{ v.numeroFactura }}</strong></td></ng-container>
+          <ng-container matColumnDef="fecha"><th mat-header-cell *matHeaderCellDef>Fecha</th><td mat-cell *matCellDef="let v" data-label="Fecha">{{ v.fechaVenta | date: 'dd/MM/yyyy HH:mm' }}</td></ng-container>
+          <ng-container matColumnDef="cliente"><th mat-header-cell *matHeaderCellDef>Cliente</th><td mat-cell *matCellDef="let v" data-label="Cliente">{{ v.clienteNombre }}</td></ng-container>
+          <ng-container matColumnDef="total"><th mat-header-cell *matHeaderCellDef class="right">Total</th><td mat-cell *matCellDef="let v" data-label="Total" class="right">{{ v.total | currency: auth.moneda() }}</td></ng-container>
           <ng-container matColumnDef="saldo"><th mat-header-cell *matHeaderCellDef class="right">Saldo</th>
-            <td mat-cell *matCellDef="let v" class="right">{{ v.estado === 'ANULADA' ? '—' : ((v.total - v.totalPagado) | currency: auth.moneda()) }}</td></ng-container>
+            <td mat-cell *matCellDef="let v" data-label="Saldo" class="right">{{ v.estado === 'ANULADA' ? '—' : ((v.total - v.totalPagado) | currency: auth.moneda()) }}</td></ng-container>
           <ng-container matColumnDef="estado"><th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let v"><span class="chip" [class]="claseEstado(v.estado)">{{ etiqueta(v.estado) }}</span></td></ng-container>
+            <td mat-cell *matCellDef="let v" data-label="Estado"><span class="chip" [class]="claseEstado(v.estado)">{{ etiqueta(v.estado) }}</span></td></ng-container>
           <tr mat-header-row *matHeaderRowDef="columnas"></tr>
           <tr mat-row *matRowDef="let row; columns: columnas" class="fila" (click)="abrir(row)"></tr>
         </table>
