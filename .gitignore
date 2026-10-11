@@ -17,3 +17,9 @@ dist/
 .vscode/
 .idea/
 .DS_Store
+
+# Procesos de desarrollo
+.run/
+# Datos reales (no subir a GitHub)
+docs/datos-*.xlsx
+docs/*-real*.xlsx

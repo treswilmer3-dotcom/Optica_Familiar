@@ -42,7 +42,7 @@ public class DbSeeder
         var plataforma = await AsegurarEmpresa("PLATAFORMA", "Plataforma Óptica", "PLATAFORMA", ct);
         var plataformaSuc = await AsegurarSucursal(plataforma, "PLAT", "Operación de la plataforma", ct);
         var empresa = await AsegurarEmpresa("OPTICA-FAMILIAR", "Óptica Familiar", "0000000000001", ct);
-        var sucursal = await AsegurarSucursal(empresa, "MATRIZ", "Sucursal Matriz", ct);
+        var sucursal = await AsegurarSucursal(empresa, "MATRIZ", "Sucursal Matriz", ct, "Quito", "Pichincha");
 
         foreach (var (codigo, nombre, desc) in new[]
         {
@@ -77,12 +77,13 @@ public class DbSeeder
         return e;
     }
 
-    private async Task<Sucursal> AsegurarSucursal(Empresa empresa, string codigo, string nombre, CancellationToken ct)
+    private async Task<Sucursal> AsegurarSucursal(Empresa empresa, string codigo, string nombre, CancellationToken ct,
+        string? ciudad = null, string? provincia = null)
     {
         var s = await _db.Sucursales.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.EmpresaId == empresa.Id && x.Codigo == codigo, ct);
         if (s == null)
         {
-            s = new Sucursal { EmpresaId = empresa.Id, Codigo = codigo, Nombre = nombre };
+            s = new Sucursal { EmpresaId = empresa.Id, Codigo = codigo, Nombre = nombre, Ciudad = ciudad, Provincia = provincia };
             _db.Sucursales.Add(s);
             await _db.SaveChangesAsync(ct);
         }
