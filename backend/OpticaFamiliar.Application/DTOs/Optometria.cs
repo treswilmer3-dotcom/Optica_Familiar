@@ -51,3 +51,10 @@ public class RecetaDto : RecetaRequest
     public long Id { get; set; }
     public DateTime FechaEmision { get; set; }
 }
+
+public class OptometristaDto
+{
+    public long Id { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string? NumeroRegistro { get; set; }
+}

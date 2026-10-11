@@ -53,6 +53,7 @@ public interface IExamenVisualService
     Task<ExamenVisualDto> CrearAsync(ExamenVisualRequest request, CancellationToken ct = default);
     Task<ExamenVisualDto> ObtenerAsync(long id, CancellationToken ct = default);
     Task<IReadOnlyList<ExamenVisualDto>> ListarPorClienteAsync(long clienteId, CancellationToken ct = default);
+    Task<IReadOnlyList<OptometristaDto>> ListarOptometristasAsync(CancellationToken ct = default);
 }
 
 public interface IRecetaService

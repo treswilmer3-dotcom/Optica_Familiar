@@ -110,6 +110,12 @@ public class ExamenVisualService : IExamenVisualService
         return res;
     }
 
+    public async Task<IReadOnlyList<OptometristaDto>> ListarOptometristasAsync(CancellationToken ct = default) =>
+        await _db.Optometristas.AsNoTracking().Where(o => o.Estado == Estados.Activo)
+            .OrderBy(o => o.Persona.Apellidos).ThenBy(o => o.Persona.Nombres)
+            .Select(o => new OptometristaDto { Id = o.Id, Nombre = (o.Persona.Nombres + " " + o.Persona.Apellidos).Trim(), NumeroRegistro = o.NumeroRegistro })
+            .ToListAsync(ct);
+
     private IQueryable<Consulta> Consultas() => _db.Consultas.AsNoTracking()
         .Include(c => c.Receta)
         .Include(c => c.HistoriaClinica).ThenInclude(h => h.Paciente).ThenInclude(p => p.Persona);

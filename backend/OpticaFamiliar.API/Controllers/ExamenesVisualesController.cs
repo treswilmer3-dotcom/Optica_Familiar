@@ -14,6 +14,9 @@ public class ExamenesVisualesController : ControllerBase
     private readonly IExamenVisualService _svc;
     public ExamenesVisualesController(IExamenVisualService svc) => _svc = svc;
 
+    [HttpGet("optometristas")]
+    public async Task<ActionResult<IReadOnlyList<OptometristaDto>>> Optometristas(CancellationToken ct) => Ok(await _svc.ListarOptometristasAsync(ct));
+
     [HttpGet("{id:long}")]
     public async Task<ActionResult<ExamenVisualDto>> Obtener(long id, CancellationToken ct) => Ok(await _svc.ObtenerAsync(id, ct));
 
