@@ -3,12 +3,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpticaFamiliar.Application.Common;
 using OpticaFamiliar.Application.Interfaces;
-using OpticaFamiliar.Domain.Entities.Configuracion;
 using OpticaFamiliar.Domain.Entities.Organizacion;
 using OpticaFamiliar.Domain.Entities.Personas;
-using OpticaFamiliar.Domain.Entities.Productos;
 using OpticaFamiliar.Domain.Entities.Seguridad;
 using OpticaFamiliar.Infrastructure.Data;
+using OpticaFamiliar.Infrastructure.Services;
 
 namespace OpticaFamiliar.Infrastructure.Seed;
 
@@ -17,6 +16,8 @@ public class SeedOptions
     public const string Seccion = "Seed";
     /// <summary>Contraseña inicial del usuario 'admin'. Si está vacía no se crea ningún usuario.</summary>
     public string? AdminPassword { get; set; }
+    /// <summary>Contraseña inicial del usuario 'superadmin' (operador de la plataforma). Si está vacía no se crea.</summary>
+    public string? SuperAdminPassword { get; set; }
 }
 
 /// <summary>Datos mínimos para operar: empresa, sucursal, roles, administrador y catálogo base. Idempotente.</summary>
@@ -37,29 +38,16 @@ public class DbSeeder
 
     public async Task SeedAsync(CancellationToken ct = default)
     {
-        var empresa = await _db.Empresas.FirstOrDefaultAsync(ct);
-        if (empresa == null)
-        {
-            empresa = new Empresa
-            {
-                Codigo = "OPTICA-FAMILIAR", RazonSocial = "Óptica Familiar", NombreComercial = "Óptica Familiar",
-                Ruc = "0000000000001"
-            };
-            _db.Empresas.Add(empresa);
-            await _db.SaveChangesAsync(ct);
-        }
-
-        var sucursal = await _db.Sucursales.FirstOrDefaultAsync(ct);
-        if (sucursal == null)
-        {
-            sucursal = new Sucursal { EmpresaId = empresa.Id, Codigo = "MATRIZ", Nombre = "Sucursal Matriz" };
-            _db.Sucursales.Add(sucursal);
-            await _db.SaveChangesAsync(ct);
-        }
+        // Sin contexto de empresa: todas las consultas saltan el filtro y asignan la empresa de forma explícita.
+        var plataforma = await AsegurarEmpresa("PLATAFORMA", "Plataforma Óptica", "PLATAFORMA", ct);
+        var plataformaSuc = await AsegurarSucursal(plataforma, "PLAT", "Operación de la plataforma", ct);
+        var empresa = await AsegurarEmpresa("OPTICA-FAMILIAR", "Óptica Familiar", "0000000000001", ct);
+        var sucursal = await AsegurarSucursal(empresa, "MATRIZ", "Sucursal Matriz", ct);
 
         foreach (var (codigo, nombre, desc) in new[]
         {
-            (Roles.Administrador, "Administrador", "Acceso total al sistema"),
+            (Roles.SuperAdmin, "Super administrador", "Operador de la plataforma: gestiona empresas"),
+            (Roles.Administrador, "Administrador", "Administra su empresa y todas sus sucursales"),
             (Roles.Vendedor, "Vendedor", "Clientes, órdenes de trabajo y ventas"),
             (Roles.Optometrista, "Optometrista", "Clientes, exámenes visuales y recetas")
         })
@@ -67,42 +55,69 @@ public class DbSeeder
             if (!await _db.Roles.AnyAsync(r => r.Codigo == codigo, ct))
                 _db.Roles.Add(new Rol { Codigo = codigo, Nombre = nombre, Descripcion = desc });
         }
-
-        foreach (var tipo in new[] { (TiposDocumento.Venta, "001"), (TiposDocumento.OrdenTrabajo, "OT"), (TiposDocumento.HistoriaClinica, "HC") })
-        {
-            if (!await _db.NumeracionDocumentos.AnyAsync(n => n.SucursalId == sucursal.Id && n.TipoDocumento == tipo.Item1, ct))
-                _db.NumeracionDocumentos.Add(new NumeracionDocumento
-                {
-                    SucursalId = sucursal.Id, TipoDocumento = tipo.Item1, Serie = tipo.Item2,
-                    NumeroActual = 0, NumeroFinal = 999_999_999, Estado = Estados.Activo
-                });
-        }
-
-        if (!await _db.CategoriaProductos.AnyAsync(ct))
-        {
-            _db.CategoriaProductos.AddRange(
-                new CategoriaProducto { Codigo = "MONTURA", Nombre = "Monturas", Estado = Estados.Activo },
-                new CategoriaProducto { Codigo = "LENTE", Nombre = "Lentes", Estado = Estados.Activo },
-                new CategoriaProducto { Codigo = "SERVICIO", Nombre = "Servicios", Estado = Estados.Activo });
-        }
         await _db.SaveChangesAsync(ct);
 
-        if (!await _db.Usuarios.AnyAsync(u => u.Username == "admin", ct))
+        if (!await _db.CategoriaProductos.IgnoreQueryFilters().AnyAsync(c => c.EmpresaId == empresa.Id, ct))
         {
-            if (string.IsNullOrWhiteSpace(_opts.AdminPassword))
-            {
-                _log.LogWarning("No se creó el usuario 'admin': configure Seed:AdminPassword (user-secrets o variable de entorno).");
-                return;
-            }
-            var rolAdmin = await _db.Roles.FirstAsync(r => r.Codigo == Roles.Administrador, ct);
-            _db.Usuarios.Add(new Usuario
-            {
-                Persona = new Persona { Nombres = "Administrador", Apellidos = "Sistema" },
-                RolId = rolAdmin.Id, SucursalId = sucursal.Id, Username = "admin",
-                PasswordHash = _hasher.Hash(_opts.AdminPassword)
-            });
+            _db.CategoriaProductos.AddRange(Aprovisionamiento.CategoriasBase(empresa.Id));
             await _db.SaveChangesAsync(ct);
-            _log.LogInformation("Usuario 'admin' creado.");
         }
+
+        await AsegurarUsuario(plataforma, plataformaSuc, "superadmin", Roles.SuperAdmin, "Super", "Administrador", _opts.SuperAdminPassword, ct);
+        await AsegurarUsuario(empresa, sucursal, "admin", Roles.Administrador, "Administrador", "Sistema", _opts.AdminPassword, ct);
+    }
+
+    private async Task<Empresa> AsegurarEmpresa(string codigo, string nombre, string fiscal, CancellationToken ct)
+    {
+        var e = await _db.Empresas.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Codigo == codigo, ct);
+        if (e != null) return e;
+        e = new Empresa { Codigo = codigo, RazonSocial = nombre, NombreComercial = nombre, IdentificacionFiscal = fiscal };
+        _db.Empresas.Add(e);
+        await _db.SaveChangesAsync(ct);
+        return e;
+    }
+
+    private async Task<Sucursal> AsegurarSucursal(Empresa empresa, string codigo, string nombre, CancellationToken ct)
+    {
+        var s = await _db.Sucursales.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.EmpresaId == empresa.Id && x.Codigo == codigo, ct);
+        if (s == null)
+        {
+            s = new Sucursal { EmpresaId = empresa.Id, Codigo = codigo, Nombre = nombre };
+            _db.Sucursales.Add(s);
+            await _db.SaveChangesAsync(ct);
+        }
+        foreach (var tipo in NumeracionDefecto.Tipos)
+        {
+            if (!await _db.NumeracionDocumentos.IgnoreQueryFilters().AnyAsync(n => n.SucursalId == s.Id && n.TipoDocumento == tipo, ct))
+            {
+                var n = NumeracionDefecto.Crear(s.Id, s.Codigo, tipo);
+                n.EmpresaId = empresa.Id;
+                _db.NumeracionDocumentos.Add(n);
+            }
+        }
+        await _db.SaveChangesAsync(ct);
+        return s;
+    }
+
+    private async Task AsegurarUsuario(Empresa empresa, Sucursal sucursal, string username, string rolCodigo,
+        string nombres, string apellidos, string? password, CancellationToken ct)
+    {
+        if (await _db.Usuarios.IgnoreQueryFilters().AnyAsync(u => u.EmpresaId == empresa.Id && u.Username == username, ct))
+            return;
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            _log.LogWarning("No se creó el usuario '{Usuario}' de {Empresa}: falta su contraseña inicial en Seed (user-secrets o variable de entorno).", username, empresa.Codigo);
+            return;
+        }
+        var rol = await _db.Roles.FirstAsync(r => r.Codigo == rolCodigo, ct);
+        _db.Usuarios.Add(new Usuario
+        {
+            EmpresaId = empresa.Id,
+            Persona = new Persona { EmpresaId = empresa.Id, Nombres = nombres, Apellidos = apellidos },
+            RolId = rol.Id, SucursalId = sucursal.Id, Username = username,
+            PasswordHash = _hasher.Hash(password)
+        });
+        await _db.SaveChangesAsync(ct);
+        _log.LogInformation("Usuario '{Usuario}' creado en {Empresa}.", username, empresa.Codigo);
     }
 }

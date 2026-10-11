@@ -11,8 +11,11 @@ using OpticaFamiliar.Domain.Entities.Transferencias;
 namespace OpticaFamiliar.Domain.Entities.Productos
 {
     [Table("producto")]
-    public class Producto : BaseEntity
+    public class Producto : BaseEntity, IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Column("categoria_id")]
         [Required]
         public long CategoriaId { get; set; }

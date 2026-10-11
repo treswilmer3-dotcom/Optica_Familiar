@@ -14,7 +14,7 @@ using OpticaFamiliar.Domain.Entities.Configuracion;
 namespace OpticaFamiliar.Domain.Entities.Organizacion
 {
     [Table("sucursal")]
-    public class Sucursal : BaseEntity
+    public class Sucursal : BaseEntity, IEmpresaOwned
     {
         [Column("empresa_id")]
         [Required]

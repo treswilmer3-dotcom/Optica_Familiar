@@ -22,6 +22,13 @@ public class ProductoDto : ProductoRequest
     public string? Estado { get; set; }
 }
 
+public class CategoriaProductoDto
+{
+    public long Id { get; set; }
+    public string Codigo { get; set; } = string.Empty;
+    public string Nombre { get; set; } = string.Empty;
+}
+
 public class OrdenTrabajoRequest
 {
     [Range(1, long.MaxValue)] public long RecetaId { get; set; }

@@ -1,3 +1,4 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +9,11 @@ using OpticaFamiliar.Domain.Entities.Personas;
 namespace OpticaFamiliar.Domain.Entities.Transferencias
 {
     [Table("transferencia")]
-    public class Transferencia
+    public class Transferencia : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

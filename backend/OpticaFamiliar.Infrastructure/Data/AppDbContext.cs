@@ -16,6 +16,7 @@ using OpticaFamiliar.Domain.Entities.Proveedores;
 using OpticaFamiliar.Domain.Entities.Seguridad;
 using OpticaFamiliar.Domain.Entities.Transferencias;
 using OpticaFamiliar.Domain.Entities.Ventas;
+using OpticaFamiliar.Application.Interfaces;
 using OpticaFamiliar.Domain.Entities.Common;
 using UsuarioEntity = OpticaFamiliar.Domain.Entities.Personas.Usuario;
 
@@ -23,9 +24,15 @@ namespace OpticaFamiliar.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly ITenantContext? _tenant;
+
+    public AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext? tenant = null) : base(options)
     {
+        _tenant = tenant;
     }
+
+    /// <summary>Empresa del usuario autenticado. 0 = sin contexto: los filtros no devuelven nada (falla cerrado).</summary>
+    private long EmpresaActual => _tenant?.EmpresaActual ?? 0;
 
     // Módulo Organización
     public DbSet<Empresa> Empresas { get; set; }
@@ -98,20 +105,53 @@ public class AppDbContext : DbContext
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var ahora = DateTime.UtcNow;
-        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        foreach (var entry in ChangeTracker.Entries())
         {
-            if (entry.State == EntityState.Added)
+            if (entry.Entity is BaseEntity b)
             {
-                entry.Entity.FechaCreacion ??= ahora;
-                entry.Entity.Estado ??= "ACTIVO";
+                if (entry.State == EntityState.Added)
+                {
+                    b.FechaCreacion ??= ahora;
+                    b.Estado ??= "ACTIVO";
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    b.FechaModificacion = ahora;
+                }
             }
-            else if (entry.State == EntityState.Modified)
-            {
-                entry.Entity.FechaModificacion = ahora;
-            }
+
+            if (entry.Entity is IEmpresaOwned e)
+                AsignarEmpresa(entry, e);
         }
         return base.SaveChangesAsync(cancellationToken);
     }
+
+    /// <summary>Asigna la empresa al insertar y bloquea escrituras hacia otra empresa.</summary>
+    private void AsignarEmpresa(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry, IEmpresaOwned e)
+    {
+        if (entry.State == EntityState.Added)
+        {
+            if (_tenant?.EmpresaActual is long actual && !_tenant.EsSuperAdmin)
+            {
+                if (e.EmpresaId == 0) e.EmpresaId = actual;
+                else if (e.EmpresaId != actual)
+                    throw new InvalidOperationException("Intento de escribir datos de otra empresa.");
+            }
+            else if (e.EmpresaId == 0 && _tenant?.EmpresaActual is long superActual)
+            {
+                e.EmpresaId = superActual;
+            }
+            if (e.EmpresaId == 0)
+                throw new InvalidOperationException($"{entry.Metadata.ClrType.Name} sin empresa asignada.");
+        }
+        else if (entry.State == EntityState.Modified && entry.Property(nameof(IEmpresaOwned.EmpresaId)).IsModified)
+        {
+            throw new InvalidOperationException("No se puede cambiar la empresa de un registro.");
+        }
+    }
+
+    private void AplicarFiltroEmpresa<T>(ModelBuilder mb) where T : class, IEmpresaOwned =>
+        mb.Entity<T>().HasQueryFilter(x => x.EmpresaId == EmpresaActual);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -154,18 +194,35 @@ public class AppDbContext : DbContext
             prop.SetScale(2);
         }
 
-        // Unicidad de claves de negocio
-        modelBuilder.Entity<Usuario>().HasIndex(u => u.Username).IsUnique();
+        // --- Multiempresa: filtro global por empresa + FK a empresa en todas las entidades de la empresa ---
+        var aplicar = typeof(AppDbContext).GetMethod(nameof(AplicarFiltroEmpresa),
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        foreach (var tipo in modelBuilder.Model.GetEntityTypes().Select(t => t.ClrType)
+                     .Where(t => typeof(IEmpresaOwned).IsAssignableFrom(t)).ToList())
+        {
+            aplicar.MakeGenericMethod(tipo).Invoke(this, [modelBuilder]);
+
+            // Sucursal y EmpresaConfiguracion ya tienen su relación con Empresa configurada por navegación.
+            if (tipo != typeof(Sucursal) && tipo != typeof(EmpresaConfiguracion))
+            {
+                modelBuilder.Entity(tipo).HasOne(typeof(Empresa)).WithMany()
+                    .HasForeignKey(nameof(IEmpresaOwned.EmpresaId)).OnDelete(DeleteBehavior.Restrict);
+            }
+        }
+        modelBuilder.Entity<Empresa>().HasQueryFilter(e => e.Id == EmpresaActual);
+
+        // Unicidad de claves de negocio (siempre dentro de la empresa)
+        modelBuilder.Entity<Usuario>().HasIndex(u => new { u.EmpresaId, u.Username }).IsUnique();
         modelBuilder.Entity<Rol>().HasIndex(r => r.Codigo).IsUnique();
-        modelBuilder.Entity<Empresa>().HasIndex(e => e.Ruc).IsUnique();
         modelBuilder.Entity<Empresa>().HasIndex(e => e.Codigo).IsUnique();
+        modelBuilder.Entity<Empresa>().HasIndex(e => new { e.Pais, e.IdentificacionFiscal }).IsUnique();
         modelBuilder.Entity<Sucursal>().HasIndex(s => new { s.EmpresaId, s.Codigo }).IsUnique();
-        modelBuilder.Entity<Persona>().HasIndex(p => p.NumeroIdentificacion).IsUnique()
+        modelBuilder.Entity<Persona>().HasIndex(p => new { p.EmpresaId, p.NumeroIdentificacion }).IsUnique()
             .HasFilter("numero_identificacion IS NOT NULL");
-        modelBuilder.Entity<Producto>().HasIndex(p => p.Codigo).IsUnique();
+        modelBuilder.Entity<Producto>().HasIndex(p => new { p.EmpresaId, p.Codigo }).IsUnique();
         modelBuilder.Entity<Venta>().HasIndex(v => new { v.SucursalId, v.NumeroFactura }).IsUnique();
-        modelBuilder.Entity<OrdenTrabajo>().HasIndex(o => o.NumeroOrden).IsUnique();
-        modelBuilder.Entity<HistoriaClinica>().HasIndex(h => h.NumeroHistoria).IsUnique();
+        modelBuilder.Entity<OrdenTrabajo>().HasIndex(o => new { o.EmpresaId, o.NumeroOrden }).IsUnique();
+        modelBuilder.Entity<HistoriaClinica>().HasIndex(h => new { h.EmpresaId, h.NumeroHistoria }).IsUnique();
         modelBuilder.Entity<NumeracionDocumento>().HasIndex(n => new { n.SucursalId, n.TipoDocumento }).IsUnique();
     }
 }

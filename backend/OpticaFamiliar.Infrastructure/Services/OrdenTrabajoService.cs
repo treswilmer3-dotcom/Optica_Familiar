@@ -31,7 +31,7 @@ public class OrdenTrabajoService : IOrdenTrabajoService
         var orden = new OrdenTrabajo
         {
             RecetaId = r.RecetaId,
-            NumeroOrden = await _numerador.SiguienteAsync(_current.SucursalId, TiposDocumento.OrdenTrabajo, "OT", ct),
+            NumeroOrden = await _numerador.SiguienteAsync(_current.SucursalId, TiposDocumento.OrdenTrabajo, ct),
             FechaIngreso = DateTime.UtcNow,
             FechaEntregaEstimada = r.FechaEntregaEstimada.HasValue
                 ? DateTime.SpecifyKind(r.FechaEntregaEstimada.Value, DateTimeKind.Utc) : null,

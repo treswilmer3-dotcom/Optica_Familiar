@@ -1,11 +1,15 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OpticaFamiliar.Domain.Entities.Configuracion
 {
     [Table("configuracion_sistema")]
-    public class ConfiguracionSistema
+    public class ConfiguracionSistema : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

@@ -14,8 +14,11 @@ using Ventas = OpticaFamiliar.Domain.Entities.Ventas;
 namespace OpticaFamiliar.Domain.Entities.Personas
 {
     [Table("usuario")]
-    public class Usuario : BaseEntity
+    public class Usuario : BaseEntity, IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Column("persona_id")]
         public long? PersonaId { get; set; }
 

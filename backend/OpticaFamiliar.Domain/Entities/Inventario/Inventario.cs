@@ -1,3 +1,4 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +9,11 @@ using OpticaFamiliar.Domain.Entities.Productos;
 namespace OpticaFamiliar.Domain.Entities.Inventario
 {
     [Table("inventario")]
-    public class Inventario
+    public class Inventario : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

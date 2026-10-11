@@ -22,7 +22,9 @@ builder.Host.UseSerilog((ctx, cfg) => cfg
 // --- Infraestructura (EF Core + servicios de negocio) ---
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddScoped<CurrentUser>();
+builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<CurrentUser>());
+builder.Services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<CurrentUser>());
 
 // --- JWT ---
 var jwt = builder.Configuration.GetSection(JwtOptions.Seccion).Get<JwtOptions>() ?? new JwtOptions();

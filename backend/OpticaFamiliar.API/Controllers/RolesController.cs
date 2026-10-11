@@ -8,7 +8,7 @@ namespace OpticaFamiliar.API.Controllers;
 
 [ApiController]
 [Route("api/roles")]
-[Authorize(Roles = Roles.Administrador)]
+[Authorize(Roles = Roles.AdminOSuper)]
 public class RolesController : ControllerBase
 {
     private readonly IRolService _svc;

@@ -2,10 +2,14 @@ namespace OpticaFamiliar.Application.Common;
 
 public static class Roles
 {
+    /// <summary>Operador de la plataforma SaaS: gestiona empresas, sin acceso a datos clínicos ni comerciales.</summary>
+    public const string SuperAdmin = "SUPERADMIN";
+    /// <summary>Administrador de una empresa (todas sus sucursales).</summary>
     public const string Administrador = "ADMIN";
     public const string Vendedor = "VENDEDOR";
     public const string Optometrista = "OPTOMETRISTA";
 
+    public const string AdminOSuper = Administrador + "," + SuperAdmin;
     public const string AdminOVendedor = Administrador + "," + Vendedor;
     public const string AdminOOptometrista = Administrador + "," + Optometrista;
     public const string Todos = Administrador + "," + Vendedor + "," + Optometrista;

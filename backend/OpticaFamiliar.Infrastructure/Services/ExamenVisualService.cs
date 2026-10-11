@@ -62,7 +62,7 @@ public class ExamenVisualService : IExamenVisualService
             historia = new HistoriaClinica
             {
                 PacienteId = paciente.Id,
-                NumeroHistoria = await _numerador.SiguienteAsync(_current.SucursalId, TiposDocumento.HistoriaClinica, "HC", ct),
+                NumeroHistoria = await _numerador.SiguienteAsync(_current.SucursalId, TiposDocumento.HistoriaClinica, ct),
                 FechaApertura = DateTime.UtcNow,
                 Estado = Estados.Activo
             };

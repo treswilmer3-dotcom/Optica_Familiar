@@ -1,3 +1,4 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -5,8 +6,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OpticaFamiliar.Domain.Entities.Proveedores
 {
     [Table("proveedor")]
-    public class Proveedor
+    public class Proveedor : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

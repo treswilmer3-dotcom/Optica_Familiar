@@ -7,7 +7,18 @@ public class EmpresaRequest
     [Required, MaxLength(50)] public string Codigo { get; set; } = string.Empty;
     [Required, MaxLength(200)] public string RazonSocial { get; set; } = string.Empty;
     [Required, MaxLength(200)] public string NombreComercial { get; set; } = string.Empty;
-    [Required, MaxLength(20)] public string Ruc { get; set; } = string.Empty;
+    /// <summary>Identificación fiscal del país (RUC en Ecuador).</summary>
+    [Required, MaxLength(30)] public string IdentificacionFiscal { get; set; } = string.Empty;
+    /// <summary>País ISO 3166-1 alfa-2.</summary>
+    [Required, StringLength(2, MinimumLength = 2)] public string Pais { get; set; } = "EC";
+    /// <summary>Moneda ISO 4217.</summary>
+    [Required, StringLength(3, MinimumLength = 3)] public string Moneda { get; set; } = "USD";
+    /// <summary>Zona horaria IANA.</summary>
+    [Required, MaxLength(50)] public string ZonaHoraria { get; set; } = "America/Guayaquil";
+    [Required, MaxLength(5)] public string Idioma { get; set; } = "es";
+    [Range(0, 100)] public decimal IvaPorcentaje { get; set; } = 15m;
+    /// <summary>ACTIVO / INACTIVO (opcional; una empresa inactiva no puede iniciar sesión).</summary>
+    public string? Estado { get; set; }
     [MaxLength(500)] public string? Direccion { get; set; }
     [MaxLength(20)] public string? Telefono { get; set; }
     [EmailAddress, MaxLength(100)] public string? Correo { get; set; }
@@ -17,12 +28,12 @@ public class EmpresaRequest
 public class EmpresaDto : EmpresaRequest
 {
     public long Id { get; set; }
-    public string? Estado { get; set; }
 }
 
 public class SucursalRequest
 {
-    [Range(1, long.MaxValue)] public long EmpresaId { get; set; }
+    /// <summary>Solo lo usa SUPERADMIN; para los demás se toma la empresa del token.</summary>
+    public long? EmpresaId { get; set; }
     [Required, MaxLength(50)] public string Codigo { get; set; } = string.Empty;
     [Required, MaxLength(200)] public string Nombre { get; set; } = string.Empty;
     [MaxLength(500)] public string? Direccion { get; set; }
@@ -48,6 +59,8 @@ public class RolDto
 
 public class UsuarioCreateRequest
 {
+    /// <summary>Solo lo usa SUPERADMIN (para crear el administrador de una empresa).</summary>
+    public long? EmpresaId { get; set; }
     [Required, MaxLength(50)] public string Username { get; set; } = string.Empty;
     [Required, MinLength(8), MaxLength(100)] public string Password { get; set; } = string.Empty;
     [Range(1, long.MaxValue)] public long RolId { get; set; }
@@ -76,6 +89,7 @@ public class CambiarPasswordRequest
 public class UsuarioDto
 {
     public long Id { get; set; }
+    public long EmpresaId { get; set; }
     public string Username { get; set; } = string.Empty;
     public long RolId { get; set; }
     public string Rol { get; set; } = string.Empty;

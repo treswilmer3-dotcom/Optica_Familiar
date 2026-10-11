@@ -11,6 +11,7 @@ public interface IEmpresaService
 {
     Task<IReadOnlyList<EmpresaDto>> ListarAsync(CancellationToken ct = default);
     Task<EmpresaDto> ObtenerAsync(long id, CancellationToken ct = default);
+    Task<EmpresaDto> ObtenerActualAsync(CancellationToken ct = default);
     Task<EmpresaDto> CrearAsync(EmpresaRequest request, CancellationToken ct = default);
     Task<EmpresaDto> ActualizarAsync(long id, EmpresaRequest request, CancellationToken ct = default);
 }
@@ -82,6 +83,7 @@ public interface IProductoService
     Task<IReadOnlyList<ProductoDto>> ListarAsync(string? buscar, CancellationToken ct = default);
     Task<ProductoDto> ObtenerAsync(long id, CancellationToken ct = default);
     Task<ProductoDto> CrearAsync(ProductoRequest request, CancellationToken ct = default);
+    Task<IReadOnlyList<CategoriaProductoDto>> ListarCategoriasAsync(CancellationToken ct = default);
 }
 
 /// <summary>Contrato de infraestructura usado por la capa de servicios.</summary>

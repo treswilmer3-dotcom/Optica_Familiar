@@ -1,3 +1,4 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,8 +8,11 @@ using OpticaFamiliar.Domain.Entities.OrdenesTrabajo;
 namespace OpticaFamiliar.Domain.Entities.HistoriaClinica
 {
     [Table("receta")]
-    public class Receta
+    public class Receta : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

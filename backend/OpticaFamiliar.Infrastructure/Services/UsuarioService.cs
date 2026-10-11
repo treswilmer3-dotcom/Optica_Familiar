@@ -20,8 +20,10 @@ public class UsuarioService : IUsuarioService
         _current = current;
     }
 
+    /// <summary>El SUPERADMIN gestiona usuarios de todas las empresas; el resto, solo los de la suya.</summary>
     private IQueryable<Usuario> Consulta() =>
-        _db.Usuarios.Include(u => u.Rol).Include(u => u.Sucursal).Include(u => u.Persona);
+        (_current.EsSuperAdmin ? _db.Usuarios.IgnoreQueryFilters() : _db.Usuarios)
+            .Include(u => u.Rol).Include(u => u.Sucursal).Include(u => u.Persona);
 
     public async Task<IReadOnlyList<UsuarioDto>> ListarAsync(CancellationToken ct = default) =>
         (await Consulta().AsNoTracking().OrderBy(u => u.Username).ToListAsync(ct)).Select(Map).ToList();
@@ -32,20 +34,30 @@ public class UsuarioService : IUsuarioService
 
     public async Task<UsuarioDto> CrearAsync(UsuarioCreateRequest r, CancellationToken ct = default)
     {
+        var empresaId = _current.EsSuperAdmin ? r.EmpresaId ?? _current.EmpresaId : _current.EmpresaId;
         var username = r.Username.Trim();
-        if (await _db.Usuarios.AnyAsync(u => u.Username == username, ct))
-            throw new BusinessRuleException("El nombre de usuario ya existe.");
+
         var rol = await _db.Roles.FirstOrDefaultAsync(x => x.Id == r.RolId, ct)
             ?? throw new BusinessRuleException("El rol indicado no existe.");
-        if (!await _db.Sucursales.AnyAsync(s => s.Id == r.SucursalId, ct))
-            throw new BusinessRuleException("La sucursal indicada no existe.");
+        if (rol.Codigo == Roles.SuperAdmin && !_current.EsSuperAdmin)
+            throw new ForbiddenException("No puede asignar el rol SUPERADMIN.");
+        if (!await _db.Empresas.IgnoreQueryFilters().AnyAsync(e => e.Id == empresaId, ct))
+            throw new BusinessRuleException("La empresa indicada no existe.");
+        if (!await _db.Sucursales.IgnoreQueryFilters().AnyAsync(s => s.Id == r.SucursalId && s.EmpresaId == empresaId, ct))
+            throw new BusinessRuleException("La sucursal indicada no existe en la empresa.");
+        if (await _db.Usuarios.IgnoreQueryFilters().AnyAsync(u => u.EmpresaId == empresaId && u.Username == username, ct))
+            throw new BusinessRuleException("El nombre de usuario ya existe en la empresa.");
+        if (!string.IsNullOrWhiteSpace(r.NumeroIdentificacion) && await _db.Personas.IgnoreQueryFilters()
+                .AnyAsync(p => p.EmpresaId == empresaId && p.NumeroIdentificacion == r.NumeroIdentificacion, ct))
+            throw new BusinessRuleException("Ya existe una persona registrada con esa identificación.");
 
         await using var tx = await _db.Database.BeginTransactionAsync(ct);
 
         var persona = new Persona
         {
+            EmpresaId = empresaId,
             TipoIdentificacion = r.TipoIdentificacion,
-            NumeroIdentificacion = r.NumeroIdentificacion,
+            NumeroIdentificacion = string.IsNullOrWhiteSpace(r.NumeroIdentificacion) ? null : r.NumeroIdentificacion.Trim(),
             Nombres = r.Nombres.Trim(),
             Apellidos = r.Apellidos.Trim(),
             Correo = r.Correo,
@@ -53,6 +65,7 @@ public class UsuarioService : IUsuarioService
         };
         var usuario = new Usuario
         {
+            EmpresaId = empresaId,
             Persona = persona,
             RolId = r.RolId,
             SucursalId = r.SucursalId,
@@ -64,7 +77,10 @@ public class UsuarioService : IUsuarioService
 
         if (rol.Codigo == Roles.Optometrista)
         {
-            _db.Optometristas.Add(new Optometrista { PersonaId = persona.Id, UsuarioId = usuario.Id, Estado = Estados.Activo });
+            _db.Optometristas.Add(new Optometrista
+            {
+                EmpresaId = empresaId, PersonaId = persona.Id, UsuarioId = usuario.Id, Estado = Estados.Activo
+            });
             await _db.SaveChangesAsync(ct);
         }
 
@@ -74,16 +90,19 @@ public class UsuarioService : IUsuarioService
 
     public async Task<UsuarioDto> ActualizarAsync(long id, UsuarioUpdateRequest r, CancellationToken ct = default)
     {
-        var u = await _db.Usuarios.FirstOrDefaultAsync(x => x.Id == id, ct)
+        var u = await (_current.EsSuperAdmin ? _db.Usuarios.IgnoreQueryFilters() : _db.Usuarios)
+            .FirstOrDefaultAsync(x => x.Id == id, ct)
             ?? throw new NotFoundException("Usuario no encontrado.");
         if (r.Estado != Estados.Activo && r.Estado != Estados.Inactivo)
             throw new BusinessRuleException("Estado inválido (ACTIVO / INACTIVO).");
         if (id == _current.UserId && r.Estado != Estados.Activo)
             throw new BusinessRuleException("No puede desactivar su propio usuario.");
-        if (!await _db.Roles.AnyAsync(x => x.Id == r.RolId, ct))
-            throw new BusinessRuleException("El rol indicado no existe.");
-        if (!await _db.Sucursales.AnyAsync(s => s.Id == r.SucursalId, ct))
-            throw new BusinessRuleException("La sucursal indicada no existe.");
+        var rol = await _db.Roles.FirstOrDefaultAsync(x => x.Id == r.RolId, ct)
+            ?? throw new BusinessRuleException("El rol indicado no existe.");
+        if (rol.Codigo == Roles.SuperAdmin && !_current.EsSuperAdmin)
+            throw new ForbiddenException("No puede asignar el rol SUPERADMIN.");
+        if (!await _db.Sucursales.IgnoreQueryFilters().AnyAsync(s => s.Id == r.SucursalId && s.EmpresaId == u.EmpresaId, ct))
+            throw new BusinessRuleException("La sucursal indicada no existe en la empresa.");
 
         u.RolId = r.RolId;
         u.SucursalId = r.SucursalId;
@@ -94,10 +113,11 @@ public class UsuarioService : IUsuarioService
 
     public async Task CambiarPasswordAsync(long id, CambiarPasswordRequest r, CancellationToken ct = default)
     {
-        if (id != _current.UserId && !_current.EsAdministrador)
+        if (id != _current.UserId && !_current.EsAdministrador && !_current.EsSuperAdmin)
             throw new ForbiddenException("Solo puede cambiar su propia contraseña.");
 
-        var u = await _db.Usuarios.FirstOrDefaultAsync(x => x.Id == id, ct)
+        var u = await (_current.EsSuperAdmin ? _db.Usuarios.IgnoreQueryFilters() : _db.Usuarios)
+            .FirstOrDefaultAsync(x => x.Id == id, ct)
             ?? throw new NotFoundException("Usuario no encontrado.");
 
         // Un administrador puede restablecer la de otro usuario; el propio usuario debe confirmar la actual.
@@ -111,7 +131,7 @@ public class UsuarioService : IUsuarioService
 
     private static UsuarioDto Map(Usuario u) => new()
     {
-        Id = u.Id, Username = u.Username, RolId = u.RolId, Rol = u.Rol.Codigo, SucursalId = u.SucursalId,
+        Id = u.Id, EmpresaId = u.EmpresaId, Username = u.Username, RolId = u.RolId, Rol = u.Rol.Codigo, SucursalId = u.SucursalId,
         Sucursal = u.Sucursal?.Nombre,
         NombreCompleto = u.Persona == null ? null : $"{u.Persona.Nombres} {u.Persona.Apellidos}".Trim(),
         Estado = u.Estado, UltimoAcceso = u.UltimoAcceso

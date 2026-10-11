@@ -46,6 +46,11 @@ public class ProductoService : IProductoService
         return await ObtenerAsync(p.Id, ct);
     }
 
+    public async Task<IReadOnlyList<CategoriaProductoDto>> ListarCategoriasAsync(CancellationToken ct = default) =>
+        await _db.CategoriaProductos.AsNoTracking().OrderBy(c => c.Nombre)
+            .Select(c => new CategoriaProductoDto { Id = c.Id, Codigo = c.Codigo, Nombre = c.Nombre })
+            .ToListAsync(ct);
+
     private static ProductoDto Map(Producto p) => new()
     {
         Id = p.Id, CategoriaId = p.CategoriaId, Categoria = p.Categoria?.Nombre, MarcaId = p.MarcaId,

@@ -7,8 +7,11 @@ using OpticaFamiliar.Domain.Entities.Common;
 namespace OpticaFamiliar.Domain.Entities.Personas
 {
     [Table("persona")]
-    public class Persona : BaseEntity
+    public class Persona : BaseEntity, IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Column("tipo_identificacion")]
         [MaxLength(20)]
         public string? TipoIdentificacion { get; set; }

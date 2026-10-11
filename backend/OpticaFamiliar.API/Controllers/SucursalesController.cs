@@ -18,13 +18,13 @@ public class SucursalesController : ControllerBase
 
     [HttpGet("{id:long}")] public async Task<ActionResult<SucursalDto>> Obtener(long id, CancellationToken ct) => Ok(await _svc.ObtenerAsync(id, ct));
 
-    [HttpPost, Authorize(Roles = Roles.Administrador)]
+    [HttpPost, Authorize(Roles = Roles.AdminOSuper)]
     public async Task<ActionResult<SucursalDto>> Crear(SucursalRequest r, CancellationToken ct)
     {
         var s = await _svc.CrearAsync(r, ct);
         return CreatedAtAction(nameof(Obtener), new { id = s.Id }, s);
     }
 
-    [HttpPut("{id:long}"), Authorize(Roles = Roles.Administrador)]
+    [HttpPut("{id:long}"), Authorize(Roles = Roles.AdminOSuper)]
     public async Task<ActionResult<SucursalDto>> Actualizar(long id, SucursalRequest r, CancellationToken ct) => Ok(await _svc.ActualizarAsync(id, r, ct));
 }

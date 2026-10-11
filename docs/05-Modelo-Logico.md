@@ -19,7 +19,12 @@ id
 codigo
 razon_social
 nombre_comercial
-ruc
+identificacion_fiscal   (RUC en Ecuador)
+pais                    (ISO 3166-1 alfa-2, p. ej. EC)
+moneda                  (ISO 4217, p. ej. USD)
+zona_horaria            (IANA, p. ej. America/Guayaquil)
+idioma
+iva_porcentaje
 direccion
 telefono
 correo
@@ -1004,3 +1009,60 @@ numeracion_documento
 
 auditoria
 ```
+
+---
+
+# MULTIEMPRESA (v1.1)
+
+Una sola base de datos y un solo esquema. Toda tabla que pertenece a una empresa lleva
+`empresa_id` (FK a `empresa`, `ON DELETE RESTRICT`), aunque pueda deducirse por la sucursal
+o por el padre. Así el aislamiento se aplica de forma uniforme y no depende de joins.
+
+## Tablas con `empresa_id`
+
+```text
+sucursal, sucursal_configuracion, empresa_configuracion
+usuario, persona, cliente, paciente, optometrista
+cita, historia_clinica, consulta, receta
+orden_trabajo, venta, venta_detalle, pago
+categoria_producto, marca, producto
+inventario, movimiento_inventario
+transferencia, transferencia_detalle
+proveedor, compra, compra_detalle
+caja, movimiento_caja
+configuracion_sistema, parametro_catalogo, numeracion_documento
+auditoria
+```
+
+## Tablas globales (sin `empresa_id`)
+
+```text
+empresa
+rol, permiso, rol_permiso      (catálogo de roles del sistema)
+```
+
+## Unicidad (siempre dentro de la empresa)
+
+```text
+usuario              (empresa_id, username)
+persona              (empresa_id, numero_identificacion)  -- cuando no es nulo
+producto             (empresa_id, codigo)
+sucursal             (empresa_id, codigo)
+orden_trabajo        (empresa_id, numero_orden)
+historia_clinica     (empresa_id, numero_historia)
+venta                (sucursal_id, numero_factura)
+numeracion_documento (sucursal_id, tipo_documento)
+empresa              (codigo)  y  (pais, identificacion_fiscal)
+```
+
+## Reglas
+
+- La empresa activa sale del claim `empresa_id` del JWT. El `DbContext` aplica un filtro global
+  por empresa y la asigna al insertar; sin contexto de empresa las consultas no devuelven nada.
+- Una misma persona real puede ser cliente de dos empresas: son registros independientes.
+- Login: `codigo_empresa + username + password`.
+- Roles: `SUPERADMIN` (operador de la plataforma: gestiona empresas, sin acceso a datos clínicos
+  ni comerciales), `ADMIN` (su empresa y todas sus sucursales), `VENDEDOR`, `OPTOMETRISTA`.
+- Cliente, historia clínica y catálogo son de la empresa (compartidos entre sus sucursales);
+  las ventas se limitan a la sucursal del usuario salvo para `ADMIN`.
+- Numeración por sucursal; la serie incluye el código de sucursal (`OT-MATRIZ`, `HC-MATRIZ`).

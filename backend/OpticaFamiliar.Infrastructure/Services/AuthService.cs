@@ -24,11 +24,17 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
+        var codigo = request.CodigoEmpresa.Trim();
         var username = request.Username.Trim();
-        var usuario = await _db.Usuarios
+
+        // El login ocurre antes de conocer la empresa: se saltan los filtros y se acota por código de empresa.
+        var empresa = await _db.Empresas.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(e => e.Codigo == codigo && e.Estado == Estados.Activo, ct);
+
+        var usuario = empresa == null ? null : await _db.Usuarios.IgnoreQueryFilters()
             .Include(u => u.Rol)
             .Include(u => u.Sucursal)
-            .FirstOrDefaultAsync(u => u.Username == username, ct);
+            .FirstOrDefaultAsync(u => u.EmpresaId == empresa.Id && u.Username == username, ct);
 
         if (usuario == null)
         {
@@ -40,7 +46,7 @@ public class AuthService : IAuthService
             return null;
 
         var (token, expira) = _jwt.Generar(usuario.Id, usuario.Username, usuario.Rol.Codigo,
-            usuario.SucursalId, usuario.Sucursal.EmpresaId);
+            usuario.SucursalId, usuario.EmpresaId);
 
         usuario.UltimoAcceso = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
@@ -53,7 +59,8 @@ public class AuthService : IAuthService
             Username = usuario.Username,
             Rol = usuario.Rol.Codigo,
             SucursalId = usuario.SucursalId,
-            EmpresaId = usuario.Sucursal.EmpresaId
+            EmpresaId = usuario.EmpresaId,
+            Empresa = empresa!.NombreComercial
         };
     }
 }

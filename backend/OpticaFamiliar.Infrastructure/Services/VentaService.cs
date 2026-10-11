@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using OpticaFamiliar.Application.Common;
 using OpticaFamiliar.Application.DTOs;
 using OpticaFamiliar.Application.Interfaces;
@@ -13,14 +12,12 @@ public class VentaService : IVentaService
 {
     private readonly AppDbContext _db;
     private readonly ICurrentUser _current;
-    private readonly NegocioOptions _negocio;
     private readonly NumeradorDocumentos _numerador;
 
-    public VentaService(AppDbContext db, ICurrentUser current, IOptions<NegocioOptions> negocio)
+    public VentaService(AppDbContext db, ICurrentUser current)
     {
         _db = db;
         _current = current;
-        _negocio = negocio.Value;
         _numerador = new NumeradorDocumentos(db);
     }
 
@@ -70,7 +67,8 @@ public class VentaService : IVentaService
 
         // Subtotal = base imponible (ya con descuentos de línea); Descuento = suma informativa de descuentos.
         var subtotal = detalles.Sum(d => d.Subtotal);
-        var iva = Math.Round(subtotal * _negocio.IvaPorcentaje / 100m, 2);
+        var ivaPct = await _db.Empresas.Where(e => e.Id == _current.EmpresaId).Select(e => e.IvaPorcentaje).FirstAsync(ct);
+        var iva = Math.Round(subtotal * ivaPct / 100m, 2);
         var total = subtotal + iva;
         var pagado = Math.Round(r.Pagos.Sum(p => p.Valor), 2);
         if (pagado > total) throw new BusinessRuleException("Los pagos superan el total de la venta.");
@@ -81,7 +79,7 @@ public class VentaService : IVentaService
             ClienteId = cliente.Id,
             UsuarioId = _current.UserId,
             SucursalId = _current.SucursalId,
-            NumeroFactura = await _numerador.SiguienteAsync(_current.SucursalId, TiposDocumento.Venta, "001", ct),
+            NumeroFactura = await _numerador.SiguienteAsync(_current.SucursalId, TiposDocumento.Venta, ct),
             FechaVenta = DateTime.UtcNow,
             Subtotal = subtotal,
             Descuento = detalles.Sum(d => d.Descuento),

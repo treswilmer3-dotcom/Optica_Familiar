@@ -17,6 +17,9 @@ public class ProductosController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<ProductoDto>>> Listar([FromQuery] string? buscar, CancellationToken ct) => Ok(await _svc.ListarAsync(buscar, ct));
 
+    [HttpGet("categorias")]
+    public async Task<ActionResult<IReadOnlyList<CategoriaProductoDto>>> Categorias(CancellationToken ct) => Ok(await _svc.ListarCategoriasAsync(ct));
+
     [HttpGet("{id:long}")]
     public async Task<ActionResult<ProductoDto>> Obtener(long id, CancellationToken ct) => Ok(await _svc.ObtenerAsync(id, ct));
 

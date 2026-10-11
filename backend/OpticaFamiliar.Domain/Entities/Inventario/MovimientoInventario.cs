@@ -1,3 +1,4 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,8 +7,11 @@ using OpticaFamiliar.Domain.Entities.Personas;
 namespace OpticaFamiliar.Domain.Entities.Inventario
 {
     [Table("movimiento_inventario")]
-    public class MovimientoInventario
+    public class MovimientoInventario : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

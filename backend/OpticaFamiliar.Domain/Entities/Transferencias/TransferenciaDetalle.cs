@@ -1,11 +1,15 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OpticaFamiliar.Domain.Entities.Transferencias
 {
     [Table("transferencia_detalle")]
-    public class TransferenciaDetalle
+    public class TransferenciaDetalle : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

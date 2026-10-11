@@ -1,3 +1,4 @@
+using OpticaFamiliar.Domain.Entities.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,8 +9,11 @@ using OpticaFamiliar.Domain.Entities.HistoriaClinica;
 namespace OpticaFamiliar.Domain.Entities.AgendaMedica
 {
     [Table("cita")]
-    public class Cita
+    public class Cita : IEmpresaOwned
     {
+        [Column("empresa_id")]
+        public long EmpresaId { get; set; }
+
         [Key]
         [Column("id")]
         public long Id { get; set; }

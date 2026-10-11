@@ -21,7 +21,6 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(o => o.UseNpgsql(cs));
 
         services.Configure<JwtOptions>(config.GetSection(JwtOptions.Seccion));
-        services.Configure<NegocioOptions>(config.GetSection(NegocioOptions.Seccion));
         services.Configure<SeedOptions>(config.GetSection(SeedOptions.Seccion));
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();

@@ -24,10 +24,33 @@ namespace OpticaFamiliar.Domain.Entities.Organizacion
         [MaxLength(200)]
         public string NombreComercial { get; set; } = string.Empty;
 
-        [Column("ruc")]
-        [Required]
-        [MaxLength(20)]
-        public string Ruc { get; set; } = string.Empty;
+        /// <summary>Identificación fiscal del país (RUC en Ecuador).</summary>
+        [Column("identificacion_fiscal")]
+        [MaxLength(30)]
+        public string IdentificacionFiscal { get; set; } = string.Empty;
+
+        /// <summary>País ISO 3166-1 alfa-2 (EC, CO, PE...).</summary>
+        [Column("pais")]
+        [MaxLength(2)]
+        public string Pais { get; set; } = "EC";
+
+        /// <summary>Moneda ISO 4217 (USD, COP...).</summary>
+        [Column("moneda")]
+        [MaxLength(3)]
+        public string Moneda { get; set; } = "USD";
+
+        /// <summary>Zona horaria IANA (America/Guayaquil...).</summary>
+        [Column("zona_horaria")]
+        [MaxLength(50)]
+        public string ZonaHoraria { get; set; } = "America/Guayaquil";
+
+        [Column("idioma")]
+        [MaxLength(5)]
+        public string Idioma { get; set; } = "es";
+
+        /// <summary>Porcentaje de IVA/impuesto por defecto de la empresa.</summary>
+        [Column("iva_porcentaje")]
+        public decimal IvaPorcentaje { get; set; } = 15m;
 
         [Column("direccion")]
         [MaxLength(500)]

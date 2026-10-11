@@ -195,6 +195,19 @@ Fase 4
 
 ---
 
+# Multiempresa desde la Fase 1
+
+El aislamiento por empresa se implementa desde el inicio (no en la Fase 4):
+
+- `empresa_id` en todas las tablas de negocio y filtro global por empresa en el `DbContext`.
+- La empresa se toma del JWT; el login exige código de empresa.
+- Rol `SUPERADMIN` para la operación de la plataforma, separado del `ADMIN` de cada empresa.
+- Parámetros regionales por empresa: país, moneda, zona horaria, idioma e IVA.
+
+Detalle en `05-Modelo-Logico.md` (sección Multiempresa).
+
+---
+
 # Decisión Final
 
 La arquitectura aprobada para el proyecto es:
