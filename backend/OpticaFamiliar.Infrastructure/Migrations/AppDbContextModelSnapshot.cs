@@ -209,7 +209,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("usuario_id");
 
                     b.Property<decimal>("Valor")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("valor");
 
                     b.HasKey("Id");
@@ -240,7 +241,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("fecha_compra");
 
                     b.Property<decimal>("Iva")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("iva");
 
                     b.Property<string>("NumeroDocumento")
@@ -254,7 +256,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("proveedor_id");
 
                     b.Property<decimal>("Subtotal")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("subtotal");
 
                     b.Property<long>("SucursalId")
@@ -262,7 +265,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("sucursal_id");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("total");
 
                     b.HasKey("Id");
@@ -292,7 +296,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("compra_id");
 
                     b.Property<decimal>("CostoUnitario")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("costo_unitario");
 
                     b.Property<long>("ProductoId")
@@ -300,7 +305,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("producto_id");
 
                     b.Property<decimal>("Subtotal")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("subtotal");
 
                     b.HasKey("Id");
@@ -411,7 +417,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SucursalId");
+                    b.HasIndex("SucursalId", "TipoDocumento")
+                        .IsUnique();
 
                     b.ToTable("numeracion_documento");
                 });
@@ -547,6 +554,9 @@ namespace OpticaFamiliar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NumeroHistoria")
+                        .IsUnique();
+
                     b.HasIndex("PacienteId");
 
                     b.ToTable("historia_clinica");
@@ -566,7 +576,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("consulta_id");
 
                     b.Property<decimal?>("DistanciaPupilar")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("distancia_pupilar");
 
                     b.Property<DateTime>("FechaEmision")
@@ -579,11 +590,13 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("observacion");
 
                     b.Property<decimal?>("OdAdicion")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("od_adicion");
 
                     b.Property<decimal?>("OdCilindro")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("od_cilindro");
 
                     b.Property<int?>("OdEje")
@@ -591,15 +604,18 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("od_eje");
 
                     b.Property<decimal?>("OdEsfera")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("od_esfera");
 
                     b.Property<decimal?>("OiAdicion")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("oi_adicion");
 
                     b.Property<decimal?>("OiCilindro")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("oi_cilindro");
 
                     b.Property<int?>("OiEje")
@@ -607,7 +623,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("oi_eje");
 
                     b.Property<decimal?>("OiEsfera")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("oi_esfera");
 
                     b.HasKey("Id");
@@ -757,6 +774,9 @@ namespace OpticaFamiliar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NumeroOrden")
+                        .IsUnique();
+
                     b.HasIndex("RecetaId");
 
                     b.HasIndex("VentaId")
@@ -831,6 +851,12 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("telefono");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Codigo")
+                        .IsUnique();
+
+                    b.HasIndex("Ruc")
+                        .IsUnique();
 
                     b.ToTable("empresa");
                 });
@@ -960,7 +986,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmpresaId");
+                    b.HasIndex("EmpresaId", "Codigo")
+                        .IsUnique();
 
                     b.ToTable("sucursal");
                 });
@@ -1041,7 +1068,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("referencia");
 
                     b.Property<decimal>("Valor")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("valor");
 
                     b.Property<long>("VentaId")
@@ -1255,6 +1283,10 @@ namespace OpticaFamiliar.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NumeroIdentificacion")
+                        .IsUnique()
+                        .HasFilter("numero_identificacion IS NOT NULL");
+
                     b.ToTable("persona");
                 });
 
@@ -1315,6 +1347,9 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                     b.HasIndex("RolId");
 
                     b.HasIndex("SucursalId");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("usuario");
                 });
@@ -1416,7 +1451,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("codigo_barras");
 
                     b.Property<decimal>("Costo")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("costo");
 
                     b.Property<string>("Descripcion")
@@ -1447,7 +1483,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("nombre");
 
                     b.Property<decimal>("Precio")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("precio");
 
                     b.Property<bool>("RequiereFormula")
@@ -1465,6 +1502,9 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriaId");
+
+                    b.HasIndex("Codigo")
+                        .IsUnique();
 
                     b.HasIndex("MarcaId");
 
@@ -1602,6 +1642,9 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("nombre");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Codigo")
+                        .IsUnique();
 
                     b.ToTable("rol");
                 });
@@ -1760,7 +1803,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("cliente_id");
 
                     b.Property<decimal>("Descuento")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("descuento");
 
                     b.Property<string>("Estado")
@@ -1773,7 +1817,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("fecha_venta");
 
                     b.Property<decimal>("Iva")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("iva");
 
                     b.Property<string>("NumeroFactura")
@@ -1783,7 +1828,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("numero_factura");
 
                     b.Property<decimal>("Subtotal")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("subtotal");
 
                     b.Property<long>("SucursalId")
@@ -1791,7 +1837,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("sucursal_id");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("total");
 
                     b.Property<long>("UsuarioId")
@@ -1802,9 +1849,10 @@ namespace OpticaFamiliar.Infrastructure.Migrations
 
                     b.HasIndex("ClienteId");
 
-                    b.HasIndex("SucursalId");
-
                     b.HasIndex("UsuarioId");
+
+                    b.HasIndex("SucursalId", "NumeroFactura")
+                        .IsUnique();
 
                     b.ToTable("venta");
                 });
@@ -1823,11 +1871,13 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("cantidad");
 
                     b.Property<decimal>("Descuento")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("descuento");
 
                     b.Property<decimal>("PrecioUnitario")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("precio_unitario");
 
                     b.Property<long>("ProductoId")
@@ -1835,7 +1885,8 @@ namespace OpticaFamiliar.Infrastructure.Migrations
                         .HasColumnName("producto_id");
 
                     b.Property<decimal>("Subtotal")
-                        .HasColumnType("numeric")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("subtotal");
 
                     b.Property<long>("VentaId")

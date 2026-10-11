@@ -16,6 +16,7 @@ using OpticaFamiliar.Domain.Entities.Proveedores;
 using OpticaFamiliar.Domain.Entities.Seguridad;
 using OpticaFamiliar.Domain.Entities.Transferencias;
 using OpticaFamiliar.Domain.Entities.Ventas;
+using OpticaFamiliar.Domain.Entities.Common;
 using UsuarioEntity = OpticaFamiliar.Domain.Entities.Personas.Usuario;
 
 namespace OpticaFamiliar.Infrastructure.Data;
@@ -94,6 +95,24 @@ public class AppDbContext : DbContext
     // Módulo Auditoría
     public DbSet<Auditoria> Auditorias { get; set; }
 
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var ahora = DateTime.UtcNow;
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.FechaCreacion ??= ahora;
+                entry.Entity.Estado ??= "ACTIVO";
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.FechaModificacion = ahora;
+            }
+        }
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -126,5 +145,27 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(t => t.UsuarioApruebaId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Precisión decimal (importes y dioptrías): numeric(18,2)
+        foreach (var prop in modelBuilder.Model.GetEntityTypes().SelectMany(t => t.GetProperties())
+                     .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+        {
+            prop.SetPrecision(18);
+            prop.SetScale(2);
+        }
+
+        // Unicidad de claves de negocio
+        modelBuilder.Entity<Usuario>().HasIndex(u => u.Username).IsUnique();
+        modelBuilder.Entity<Rol>().HasIndex(r => r.Codigo).IsUnique();
+        modelBuilder.Entity<Empresa>().HasIndex(e => e.Ruc).IsUnique();
+        modelBuilder.Entity<Empresa>().HasIndex(e => e.Codigo).IsUnique();
+        modelBuilder.Entity<Sucursal>().HasIndex(s => new { s.EmpresaId, s.Codigo }).IsUnique();
+        modelBuilder.Entity<Persona>().HasIndex(p => p.NumeroIdentificacion).IsUnique()
+            .HasFilter("numero_identificacion IS NOT NULL");
+        modelBuilder.Entity<Producto>().HasIndex(p => p.Codigo).IsUnique();
+        modelBuilder.Entity<Venta>().HasIndex(v => new { v.SucursalId, v.NumeroFactura }).IsUnique();
+        modelBuilder.Entity<OrdenTrabajo>().HasIndex(o => o.NumeroOrden).IsUnique();
+        modelBuilder.Entity<HistoriaClinica>().HasIndex(h => h.NumeroHistoria).IsUnique();
+        modelBuilder.Entity<NumeracionDocumento>().HasIndex(n => new { n.SucursalId, n.TipoDocumento }).IsUnique();
     }
 }

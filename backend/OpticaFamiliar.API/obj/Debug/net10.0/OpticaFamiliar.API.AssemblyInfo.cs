@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("cc720513-d5db-4aca-91d8-a307b4f1df1e")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("OpticaFamiliar.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2eb737c4e718cf183c67d6b4f6b0c7772261ba1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a39f1508df0ad730b65c881b35c619c9dd7f6a2e")]
 [assembly: System.Reflection.AssemblyProductAttribute("OpticaFamiliar.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OpticaFamiliar.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
