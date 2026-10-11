@@ -7,6 +7,14 @@ Definir las entidades principales del negocio y sus relaciones para un Sistema d
 
 ---
 
+### Nota de versión (v1.1)
+
+El modelo es **multiempresa**: cada entidad que pertenece a una óptica lleva su empresa (ver `05-Modelo-Logico.md`,
+sección Multiempresa). Los únicos elementos globales son la propia Empresa y el catálogo de Roles y Permisos.
+Estado de implementación por dominio: `02-ARQUITECTURA-OFICIAL.md`.
+
+---
+
 # Alcance del Sistema
 
 El sistema permitirá gestionar:

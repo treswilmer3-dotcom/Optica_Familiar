@@ -430,3 +430,45 @@ AUDITORIA
 ```
 
 ---
+
+---
+
+# Multiempresa (v1.1)
+
+`EMPRESA` es el tenant. Las entidades raíz de cada módulo pertenecen a una empresa (`empresa_id`); las demás
+heredan la pertenencia a través de su padre y además llevan `empresa_id` para aislar por consulta directa.
+
+```mermaid
+erDiagram
+    EMPRESA ||--o{ SUCURSAL : posee
+    EMPRESA ||--o{ USUARIO : emplea
+    EMPRESA ||--o{ PERSONA : registra
+    EMPRESA ||--o{ PRODUCTO : cataloga
+    EMPRESA ||--o{ CATEGORIA_PRODUCTO : clasifica
+    EMPRESA ||--o{ NUMERACION_DOCUMENTO : numera
+    EMPRESA ||--o{ VENTA : factura
+    EMPRESA ||--o{ ORDEN_TRABAJO : produce
+    EMPRESA ||--o{ HISTORIA_CLINICA : custodia
+
+    SUCURSAL ||--o{ USUARIO : asigna
+    SUCURSAL ||--o{ VENTA : origina
+    SUCURSAL ||--o{ NUMERACION_DOCUMENTO : correlativo
+
+    ROL ||--o{ USUARIO : define
+```
+
+Tablas globales (sin `empresa_id`): `empresa`, `rol`, `permiso`, `rol_permiso`.
+Reglas de unicidad y aislamiento: `05-Modelo-Logico.md`.
+
+## Flujo operativo implementado
+
+```mermaid
+flowchart LR
+    L[Login<br/>código de empresa] --> C[Cliente]
+    C --> E[Examen visual]
+    E --> R[Receta]
+    R --> O[Orden de trabajo]
+    O --> V[Venta + pagos]
+    V --> D[Entrega]
+    C -.-> H[Historial del cliente]
+```

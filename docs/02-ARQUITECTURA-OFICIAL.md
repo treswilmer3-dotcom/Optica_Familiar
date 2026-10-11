@@ -1,12 +1,10 @@
 # ÓPTICA FAMILIAR
 
-# Arquitectura Oficial v1.0
+# Arquitectura Oficial v1.1
 
 ## Estado
 
-APROBADO
-
-Congelado para Fase 1
+APROBADO · Fase 1 implementada (ver sección «Estado de implementación»)
 
 ---
 
@@ -170,41 +168,117 @@ Este flujo constituye el núcleo funcional del negocio.
 
 # Roadmap
 
-Fase 1
+Fase 1 — **Completada**
 
-- Seguridad
-- Clientes
-- Optometría
-- Venta
+- Seguridad, multiempresa, clientes, optometría, ventas y órdenes de trabajo
+- Frontend funcional con control por roles
+
+Fase 1.5 — Afinamiento y entrega (siguiente)
+
+- Identidad visual: logo y colores por empresa (`empresa_configuracion` ya modela logo y colores)
+- Ajustes de interfaz para computador y celular
+- Cambio de credenciales iniciales y carga de datos reales
+- Empaquetado con Docker / Docker Compose y despliegue desde registro de contenedores
 
 Fase 2
 
-- Inventario
-- Compras
-- Proveedores
+- Inventario por sucursal, transferencias, compras y proveedores
+- Agenda de citas
 
 Fase 3
 
-- Reportes
-- Dashboard
-- Facturación Electrónica
+- Reportes y dashboard
+- Facturación electrónica (SRI Ecuador)
 
 Fase 4
 
-- Comercialización SaaS
+- Comercialización SaaS (planes, alta autoservicio de empresas, otros países)
 
 ---
 
-# Multiempresa desde la Fase 1
+# Estructura de la solución
 
-El aislamiento por empresa se implementa desde el inicio (no en la Fase 4):
+```text
+backend/
+  OpticaFamiliar.Domain          Entidades (36) y reglas básicas. Sin dependencias.
+  OpticaFamiliar.Application     DTOs, interfaces de servicios, constantes (roles, estados), excepciones.
+  OpticaFamiliar.Infrastructure  EF Core (AppDbContext + migraciones), implementación de servicios,
+                                 JWT, BCrypt, numeración de documentos y datos iniciales (seed).
+  OpticaFamiliar.API             Controllers REST, JWT/CORS/Swagger/Serilog, composición de dependencias.
+frontend/                        Angular 18 (core · layout · shared · features)
+scripts/                         dev.sh (entorno local) y smoke-test.sh (verificación)
+docs/                            Documentación
+```
 
-- `empresa_id` en todas las tablas de negocio y filtro global por empresa en el `DbContext`.
-- La empresa se toma del JWT; el login exige código de empresa.
-- Rol `SUPERADMIN` para la operación de la plataforma, separado del `ADMIN` de cada empresa.
-- Parámetros regionales por empresa: país, moneda, zona horaria, idioma e IVA.
+Dependencias: `API → Application, Infrastructure` · `Infrastructure → Application, Domain` · `Application → Domain`.
+La capa Application solo define contratos; las reglas de negocio viven en los servicios de Infrastructure.
 
-Detalle en `05-Modelo-Logico.md` (sección Multiempresa).
+---
+
+# Multiempresa (implementada)
+
+Una sola base de datos y un solo esquema. Toda tabla que pertenece a una empresa lleva `empresa_id`
+(FK a `empresa`). El aislamiento es automático y falla cerrado:
+
+1. El JWT contiene `empresa_id`, `sucursal_id` y `role`.
+2. `AppDbContext` aplica un **filtro global** `EmpresaId == empresa del usuario` a todas las entidades de la empresa.
+   Sin empresa en el contexto (login, seed) las consultas no devuelven nada.
+3. Al insertar, la empresa se asigna sola; escribir datos de otra empresa o cambiar la empresa de un registro lanza error.
+4. Las únicas operaciones que cruzan empresas (login por código de empresa, gestión de empresas, sucursales y usuarios
+   por el `SUPERADMIN`) usan `IgnoreQueryFilters()` de forma explícita y acotada.
+
+Reglas:
+
+- Login: **código de empresa + usuario + contraseña**. El usuario es único dentro de su empresa.
+- Una persona puede ser cliente de dos empresas: son registros independientes (cada empresa es dueña de sus datos).
+- Catálogo de productos, categorías y numeración son por empresa; el inventario será por sucursal.
+- Parámetros regionales por empresa: país, moneda, zona horaria, idioma e IVA (hoy Ecuador, USD, 15 %).
+- Roles globales: `SUPERADMIN` (plataforma; gestiona empresas, **sin acceso a datos clínicos ni comerciales**),
+  `ADMIN` (su empresa y todas sus sucursales), `VENDEDOR`, `OPTOMETRISTA`.
+- Visibilidad: clientes e historial son de la empresa (cliente corporativo entre sucursales);
+  las ventas se limitan a la sucursal del usuario, salvo para `ADMIN`.
+
+Detalle de tablas y unicidades en `05-Modelo-Logico.md`.
+
+---
+
+# Seguridad
+
+- Autenticación JWT (8 h por defecto), contraseñas con BCrypt, respuesta uniforme ante credenciales inválidas.
+- Autorización por rol en cada endpoint; el frontend solo oculta opciones, la API es quien autoriza.
+- Límite de intentos de login por IP, CORS por lista blanca, errores sin detalles internos (ProblemDetails).
+- Secretos (cadena de conexión, clave JWT, contraseñas iniciales) fuera de git.
+- Pendientes: auditoría de operaciones, bloqueo de cuenta por intentos fallidos, invalidación de tokens al desactivar
+  una empresa o usuario (hoy el token vigente sigue válido hasta vencer).
+
+---
+
+# Estado de implementación
+
+| Dominio | Estado |
+|---|---|
+| Organización (empresa, sucursal) y multiempresa | Implementado |
+| Seguridad (login, usuarios, roles, JWT) | Implementado |
+| Clientes e historial | Implementado |
+| Optometría (examen visual, receta) | Implementado |
+| Comercial (productos, orden de trabajo, venta, pagos, anulación) | Implementado |
+| Agenda médica (citas) | Modelado, sin servicios (fuera de Fase 1) |
+| Inventario, transferencias, compras, proveedores | Modelado, sin servicios (Fase 2) |
+| Caja | Modelado, sin servicios |
+| Reportes, dashboard, facturación electrónica (SRI) | Pendiente (Fase 3) |
+| Auditoría | Modelada, sin implementar |
+
+---
+
+# Decisiones tomadas durante la Fase 1
+
+- El «Examen Visual» se implementa sobre `consulta` + `historia_clinica` + `paciente` (el paciente se crea automáticamente
+  a partir del cliente al registrar su primer examen).
+- Baja lógica de clientes (`persona.estado = INACTIVO`) para conservar el historial clínico y comercial.
+- Venta: el servidor recalcula precios, descuentos e IVA; el cliente solo envía productos, cantidades y pagos.
+- Numeración correlativa por sucursal y tipo de documento (`numeracion_documento`); la serie incluye el código de
+  sucursal (`OT-QUITO-000000001`) para ser única dentro de la empresa.
+- Los datos de demostración (`DEMO-ANDINA`, `DEMO-SIERRA`) están separados de las empresas reales (ver `08-DATOS-DE-PRUEBA.md`).
 
 ---
 

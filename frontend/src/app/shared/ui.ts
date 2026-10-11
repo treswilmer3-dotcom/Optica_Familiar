@@ -17,8 +17,11 @@ export function claseEstado(estado?: string | null): string {
   }
 }
 
+const ETIQUETAS: Record<string, string> = { EN_PRODUCCION: 'En producción' };
+
 export function etiquetaEstado(estado?: string | null): string {
-  return (estado ?? '').replace(/_/g, ' ').toLowerCase().replace(/^./, c => c.toUpperCase());
+  const e = estado ?? '';
+  return ETIQUETAS[e] ?? e.replace(/_/g, ' ').toLowerCase().replace(/^./, c => c.toUpperCase());
 }
 
 /** Convierte un Date del datepicker a ISO (fecha a medianoche UTC) o null. */

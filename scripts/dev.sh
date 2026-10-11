@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Levanta/detiene el entorno de desarrollo (API .NET + frontend Angular) dentro de WSL.
-# Uso: ./scripts/dev.sh start | stop | status | logs
+# Uso: ./scripts/dev.sh start | stop | status | logs | reset-demo | smoke
 set -u
 RAIZ="$(cd "$(dirname "$0")/.." && pwd)"
 RUN="$RAIZ/.run"
@@ -54,5 +54,8 @@ case "${1:-}" in
   status) vivo api && echo "API: en ejecución ($API_URL)" || echo "API: detenida"
           vivo web && echo "Frontend: en ejecución ($WEB_URL)" || echo "Frontend: detenido" ;;
   logs)   tail -n 30 "$RUN/api.log" "$RUN/web.log" ;;
-  *) echo "Uso: $0 start | stop | status | logs"; exit 1 ;;
+  reset-demo) # Borra y vuelve a cargar SOLO las empresas demo (DEMO-ANDINA, DEMO-SIERRA). Las reales no se tocan.
+          ( cd "$RAIZ/backend/OpticaFamiliar.API" && ASPNETCORE_ENVIRONMENT=Development dotnet run -- --reset-demo ) ;;
+  smoke)  "$RAIZ/scripts/smoke-test.sh" ;;
+  *) echo "Uso: $0 start | stop | status | logs | reset-demo | smoke"; exit 1 ;;
 esac

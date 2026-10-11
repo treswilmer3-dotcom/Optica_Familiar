@@ -18,6 +18,10 @@ public class SeedOptions
     public string? AdminPassword { get; set; }
     /// <summary>Contraseña inicial del usuario 'superadmin' (operador de la plataforma). Si está vacía no se crea.</summary>
     public string? SuperAdminPassword { get; set; }
+    /// <summary>Carga empresas, usuarios y registros ficticios de demostración (solo desarrollo).</summary>
+    public bool Demo { get; set; }
+    /// <summary>Contraseña de todos los usuarios demo. Si está vacía no se cargan datos demo.</summary>
+    public string? DemoPassword { get; set; }
 }
 
 /// <summary>Datos mínimos para operar: empresa, sucursal, roles, administrador y catálogo base. Idempotente.</summary>

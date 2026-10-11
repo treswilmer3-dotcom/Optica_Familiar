@@ -2,11 +2,42 @@
 ## Sistema de Gestión Integral para Ópticas
 
 ### Versión
-1.0
+1.1
 
 ### Objetivo
 
 Definir las entidades, atributos, relaciones y reglas de negocio que servirán como base para la implementación en PostgreSQL 17 y Entity Framework Core 10.
+
+---
+
+# CAMBIOS DE LA v1.1 RESPECTO A LA v1.0
+
+```text
+empresa
+  ruc                -> identificacion_fiscal (varchar 30)
+  + pais, moneda, zona_horaria, idioma, iva_porcentaje
+
+Todas las tablas de la empresa
+  + empresa_id (FK a empresa, ON DELETE RESTRICT)       (ver sección MULTIEMPRESA)
+
+Tipos
+  importes y dioptrías: numeric(18,2)
+  fechas: timestamp with time zone (siempre UTC)
+
+Estados utilizados
+  generales:      ACTIVO / INACTIVO
+  venta:          PENDIENTE / PAGADA / ANULADA
+  orden_trabajo:  CREADA / EN_PRODUCCION / EN_LABORATORIO / TERMINADA / ENTREGADA
+  cita:           (modelado, sin servicios)
+
+Numeración (numeracion_documento, por sucursal y tipo)
+  VENTA            serie 001          -> 001-000000001
+  ORDEN_TRABAJO    serie OT-<sucursal> -> OT-QUITO-000000001
+  HISTORIA_CLINICA serie HC-<sucursal> -> HC-QUITO-000000001
+
+Baja lógica
+  cliente se da de baja con persona.estado = INACTIVO (conserva historial)
+```
 
 ---
 

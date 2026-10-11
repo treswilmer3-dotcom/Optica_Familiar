@@ -4,9 +4,9 @@
 
 ## Estado
 
-APROBADO
+COMPLETADA
 
-Listo para Construcción
+Validada de extremo a extremo (API, base de datos y frontend) con datos de demostración.
 
 ---
 
@@ -16,71 +16,66 @@ Implementar el núcleo operativo funcional.
 
 ---
 
-# Módulo Seguridad
+# Resultado por módulo
 
-- Empresa
-- Sucursal
-- Rol
-- Usuario
-- Login
-- JWT
+## Módulo Seguridad — completado
 
----
+- Empresa y Sucursal (alta y edición; la empresa nueva se crea con sus categorías base)
+- Rol (catálogo del sistema) y Usuario (alta, edición, activación, cambio y restablecimiento de contraseña)
+- Login por código de empresa con JWT
 
-# Módulo Clientes
+## Módulo Clientes — completado
 
-- Cliente
+- Cliente (alta, edición, búsqueda paginada, baja lógica) e historial clínico y comercial
 
----
+## Módulo Optometría — completado
 
-# Módulo Optometría
+- Examen Visual (consulta e historia clínica) y Receta, con validación de rangos y eje obligatorio si hay cilindro
 
-- Examen Visual
-- Receta
+## Módulo Comercial — completado
 
----
-
-# Módulo Comercial
-
-- Orden Trabajo
-- Venta
-- Detalle Venta
+- Orden de Trabajo (estados `CREADA → EN_PRODUCCION → EN_LABORATORIO → TERMINADA → ENTREGADA`)
+- Venta y Detalle de Venta, pagos parciales o mixtos, anulación
+- Catálogo mínimo de productos (necesario para facturar)
 
 ---
 
-# Flujo Mínimo Operativo
+# Flujo Mínimo Operativo (validado)
 
-Login
-↓
-Cliente
-↓
-Examen Visual
-↓
-Receta
-↓
-Orden Trabajo
-↓
-Venta
-↓
-Entrega
+Login → Cliente → Examen Visual → Receta → Orden de Trabajo → Venta → Entrega → Historial del cliente
 
 ---
 
-# Fuera de Alcance
+# Alcance respecto a lo planificado
 
-- Inventario Completo
-- Compras
-- Proveedores
-- Dashboard
+| Previsto | Resultado |
+|---|---|
+| Empresa, Sucursal, Rol, Usuario, Login, JWT | Hecho |
+| Cliente | Hecho |
+| Examen Visual, Receta | Hecho |
+| Orden de Trabajo, Venta, Detalle de Venta | Hecho |
+| Historial del cliente | Hecho |
+| Multiempresa (originalmente prevista para Fase 4) | **Adelantada a Fase 1** por requerimiento comercial |
+| Rol SUPERADMIN y parámetros regionales por empresa | Añadido |
+| Catálogo mínimo de productos | Añadido (necesario para vender) |
+
+---
+
+# Fuera de Alcance (siguen pendientes)
+
+- Inventario completo (el stock no se descuenta al vender)
+- Compras y Proveedores
+- Agenda de citas
+- Dashboard y reportes
 - Facturación Electrónica
 - Multiidioma
-- Aplicación Móvil
+- Aplicación Móvil (la web es responsive)
 
 ---
 
-# Objetivo de Salida
+# Objetivo de Salida — cumplido
 
-Al finalizar la Fase 1 el sistema deberá permitir:
+El sistema permite:
 
 - Iniciar sesión
 - Registrar clientes
@@ -89,3 +84,14 @@ Al finalizar la Fase 1 el sistema deberá permitir:
 - Registrar órdenes de trabajo
 - Registrar ventas
 - Generar historial del cliente
+
+---
+
+# Pendientes técnicos conocidos
+
+- Auditoría de operaciones (modelada, no implementada)
+- Bloqueo de cuenta por intentos fallidos
+- Invalidar tokens vigentes al desactivar usuarios o empresas
+- Validación de cédula/RUC ecuatoriano (diferida por el objetivo multipaís)
+- Pruebas automatizadas unitarias y de integración (hoy: `scripts/smoke-test.sh`)
+- Empaquetado con Docker (siguiente fase)

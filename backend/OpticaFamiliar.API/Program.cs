@@ -60,7 +60,7 @@ builder.Services.AddRateLimiter(o =>
     o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     o.AddPolicy("login", ctx => RateLimitPartition.GetFixedWindowLimiter(
         ctx.Connection.RemoteIpAddress?.ToString() ?? "anon",
-        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = builder.Configuration.GetValue("RateLimit:LoginPorMinuto", 10), Window = TimeSpan.FromMinutes(1) }));
 });
 
 // --- CORS restringido a los orígenes configurados (Angular en desarrollo: http://localhost:4200) ---
@@ -100,6 +100,12 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<DbSeeder>().SeedAsync();
+
+    var demo = scope.ServiceProvider.GetRequiredService<DemoDataSeeder>();
+    var seedOpts = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<SeedOptions>>().Value;
+    if (args.Contains("--reset-demo")) await demo.ResetAsync();   // dotnet run -- --reset-demo
+    if (seedOpts.Demo || args.Contains("--reset-demo")) await demo.SeedAsync();
+    if (args.Contains("--reset-demo")) return;
 }
 
 app.UseExceptionHandler();

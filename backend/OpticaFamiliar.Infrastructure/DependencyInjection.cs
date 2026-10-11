@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<IVentaService, VentaService>();
         services.AddScoped<IProductoService, ProductoService>();
         services.AddScoped<DbSeeder>();
+        services.AddScoped<DemoDataSeeder>();
 
         return services;
     }
